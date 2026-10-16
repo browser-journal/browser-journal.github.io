@@ -1,0 +1,142 @@
+---
+import { SUPPORTED_LANGUAGES, getLanguagePath } from '../i18n';
+import type { LocalizedDictionary } from '../types/journal';
+
+interface Props {
+  currentLocale: string;
+  dict: LocalizedDictionary;
+}
+
+const { currentLocale, dict } = Astro.props;
+const siteUrl = 'https://daily-diary.github.io';
+const canonicalUrl = `${siteUrl}${getLanguagePath(currentLocale)}`;
+
+// Technical SEO Schemas
+const webAppSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'DailyDiary',
+  alternateName: [
+    'Daily Diary Online',
+    'Free Private Online Journal',
+    'Browser Notepad Journal',
+    'Zero Server Diary App',
+    'Private Client-Side Diary',
+  ],
+  applicationCategory: 'LifestyleApplication',
+  operatingSystem: 'All Modern Web Browsers',
+  url: canonicalUrl,
+  description: dict.meta.description,
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  featureList: [
+    '100% Client-Side Privacy (Zero Server Communication)',
+    'AES-GCM 256-bit PIN Lock & Encryption',
+    'Instant LocalStorage Autosaving',
+    'Distraction-Free Zen Focus Mode',
+    'Daily Mood Tracker & Reflection Prompts',
+    'Consistency Streak 30-Day Heatmap',
+    'Browser-Configurable Color Palettes & Editorial Typography',
+    'Universal Markdown (.md), Text (.txt), and JSON Backup Export',
+  ],
+  browserRequirements: 'Requires JavaScript and LocalStorage support.',
+};
+
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'How to Keep a 100% Private Online Journal in Your Web Browser',
+  description: 'A step-by-step guide to maintaining a distraction-free, encrypted daily diary using browser-only storage.',
+  step: [
+    {
+      '@type': 'HowToStep',
+      name: 'Open DailyDiary',
+      text: 'Visit daily-diary.github.io in any browser. No login or signup required.',
+      position: 1,
+    },
+    {
+      '@type': 'HowToStep',
+      name: 'Select Mood & Mindset Prompt',
+      text: 'Pick your emotional state from the mood pills or tap Inspire Me to receive a thoughtful reflection question.',
+      position: 2,
+    },
+    {
+      '@type': 'HowToStep',
+      name: 'Write Freely in Zen Mode',
+      text: 'Write your thoughts in the distraction-free canvas. Every keystroke auto-saves locally.',
+      position: 3,
+    },
+    {
+      '@type': 'HowToStep',
+      name: 'Enable Optional PIN Encryption',
+      text: 'Protect entries on shared devices with 4-digit PIN lock powered by Web Crypto API AES-GCM.',
+      position: 4,
+    },
+    {
+      '@type': 'HowToStep',
+      name: 'Export and Backup Data',
+      text: 'Download your memories as Markdown (.md) or full JSON backups whenever you want.',
+      position: 5,
+    },
+  ],
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: dict.seoContent.faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.a,
+    },
+  })),
+};
+---
+
+<!-- Primary Meta Tags -->
+<title>{dict.meta.title}</title>
+<meta name="title" content={dict.meta.title} />
+<meta name="description" content={dict.meta.description} />
+<meta name="keywords" content={dict.meta.keywords} />
+<meta name="author" content="DailyDiary" />
+<meta name="robots" content="index, follow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#FAF8F5" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0C0A09" media="(prefers-color-scheme: dark)" />
+
+<!-- Canonical and Alternate Hreflang Tags -->
+<link rel="canonical" href={canonicalUrl} />
+<link rel="alternate" hreflang="x-default" href={siteUrl} />
+{
+  SUPPORTED_LANGUAGES.map((lang) => (
+    <link rel="alternate" hreflang={lang.code} href={`${siteUrl}${getLanguagePath(lang.code)}`} />
+  ))
+}
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={dict.meta.title} />
+<meta property="og:description" content={dict.meta.description} />
+<meta property="og:site_name" content="DailyDiary" />
+<meta property="og:locale" content={currentLocale} />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content={canonicalUrl} />
+<meta name="twitter:title" content={dict.meta.title} />
+<meta name="twitter:description" content={dict.meta.description} />
+
+<!-- Favicon and PWA -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="manifest" href="/manifest.json" />
+
+<!-- Structured Data (JSON-LD) -->
+<script type="application/ld+json" set:html={JSON.stringify(webAppSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />

@@ -1,0 +1,83 @@
+---
+import SEOHead from '../components/SEOHead.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import type { LocalizedDictionary } from '../types/journal';
+import '../styles/global.css';
+
+interface Props {
+  currentLocale: string;
+  dict: LocalizedDictionary;
+}
+
+const { currentLocale, dict } = Astro.props;
+---
+
+<!doctype html>
+<html lang={currentLocale} class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <SEOHead currentLocale={currentLocale} dict={dict} />
+    
+    <!-- Prevent theme/dark mode flash before render -->
+    <script is:inline>
+      try {
+        const darkMode = localStorage.getItem('daily_diary_dark_mode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (darkMode === 'true' || (darkMode === null && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+
+        const customThemeRaw = localStorage.getItem('daily_diary_custom_theme_v1');
+        let cfg = null;
+        if (customThemeRaw) {
+          try {
+            cfg = JSON.parse(customThemeRaw);
+          } catch(e) {}
+        }
+        if (!cfg || cfg.presetId === 'sage') {
+          cfg = {
+            presetId: 'pastel-aesthetic',
+            primaryColor: '#95E1D3',
+            primaryHover: '#78CBBF',
+            primaryLight: '#EAFFD0',
+            accentColor: '#F38181'
+          };
+        }
+        if (cfg.primaryColor) {
+          document.documentElement.style.setProperty('--brand-primary', cfg.primaryColor);
+          document.documentElement.style.setProperty('--brand-primary-hover', cfg.primaryHover || cfg.primaryColor);
+        }
+        if (cfg.primaryLight) {
+          document.documentElement.style.setProperty('--brand-primary-light', cfg.primaryLight);
+        }
+        if (cfg.accentColor) {
+          document.documentElement.style.setProperty('--brand-accent', cfg.accentColor);
+        }
+        document.documentElement.style.setProperty('--brand-coral', '#F38181');
+        document.documentElement.style.setProperty('--brand-yellow', '#FCE38A');
+        document.documentElement.style.setProperty('--brand-mint', '#EAFFD0');
+        document.documentElement.style.setProperty('--brand-seafoam', '#95E1D3');
+
+        if (cfg.fontFamily === 'serif') {
+          document.documentElement.style.setProperty('--font-journal', '"Playfair Display", Georgia, Cambria, serif');
+        } else if (cfg.fontFamily === 'mono') {
+          document.documentElement.style.setProperty('--font-journal', '"JetBrains Mono", Menlo, Consolas, monospace');
+        } else if (cfg.fontFamily === 'sans') {
+          document.documentElement.style.setProperty('--font-journal', '"Plus Jakarta Sans", system-ui, sans-serif');
+        }
+      } catch (e) {
+        console.error('Error applying initial theme:', e);
+      }
+    </script>
+  </head>
+  <body class="min-h-full flex flex-col bg-editorial-lightBg dark:bg-editorial-darkBg text-editorial-ink dark:text-stone-100 selection:bg-brand/20 selection:text-brand font-sans-clean transition-colors duration-200">
+    <Navbar currentLocale={currentLocale} dict={dict} />
+    <main class="flex-1 flex flex-col">
+      <slot />
+    </main>
+    <Footer currentLocale={currentLocale} dict={dict} />
+  </body>
+</html>

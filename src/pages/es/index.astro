@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import JournalApp from '../../components/JournalApp';
+import { getDictionary } from '../../i18n';
+
+const currentLocale = 'es';
+const dict = getDictionary(currentLocale);
+---
+
+<Layout currentLocale={currentLocale} dict={dict}>
+  <JournalApp client:load currentLocale={currentLocale} dict={dict} />
+</Layout>
