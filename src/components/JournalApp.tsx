@@ -35,6 +35,7 @@ import {
   Book,
   BookOpen,
   Image as ImageIcon,
+  Copy,
 } from 'lucide-react';
 import type {
   JournalEntry,
@@ -153,6 +154,7 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
   const [showThemeModal, setShowThemeModal] = useState<boolean>(false);
   const [showExportModal, setShowExportModal] = useState<boolean>(false);
   const [showPinSetupModal, setShowPinSetupModal] = useState<boolean>(false);
+  const [copiedFeedback, setCopiedFeedback] = useState<boolean>(false);
 
   // Theme
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(DEFAULT_THEME_CONFIG);
@@ -215,8 +217,11 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
       setIsPinConfigured(false);
       setIsLocked(false);
       loadEntries(null, currentLocale).then((items) => {
-        setEntries(items);
-        initActiveEntry(items, activeDate);
+        const cleanItems = items.filter(
+          (e) => e.id !== 'welcome-entry-intro' && !e.tags?.includes('welcome') && !e.title?.includes('Welcome to DailyDiary')
+        );
+        setEntries(cleanItems);
+        initActiveEntry(cleanItems, activeDate);
         setIsLoaded(true);
       });
     }
@@ -466,6 +471,37 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
       setContent(html);
       setSaveStatus('unsaved');
       triggerAutoSave(title, html, mood, promptUsed);
+    }
+  };
+
+  // Select all text in the journal entry
+  const handleSelectAll = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (editorRef.current) {
+      editorRef.current.focus();
+      const range = document.createRange();
+      range.selectNodeContents(editorRef.current);
+      const sel = window.getSelection();
+      if (sel) {
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+  };
+
+  // Copy selected text or full entry content
+  const handleCopySelection = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      const selectedText = window.getSelection()?.toString();
+      const textToCopy = selectedText || (editorRef.current ? htmlToPlainText(editorRef.current.innerHTML) : content);
+      if (textToCopy) {
+        await navigator.clipboard.writeText(textToCopy);
+        setCopiedFeedback(true);
+        setTimeout(() => setCopiedFeedback(false), 1600);
+      }
+    } catch (err) {
+      console.error('Failed to copy text', err);
     }
   };
 
@@ -1158,13 +1194,14 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                 {!zenMode && (
                   <div className="p-2 sm:px-6 sm:py-2.5 border-b border-stone-200/70 dark:border-stone-800/70 bg-[#F7F4EE]/90 dark:bg-[#151413]/90 flex items-center justify-between gap-1.5 sm:gap-2 flex-wrap text-xs text-stone-700 dark:text-stone-300 no-print pl-6">
                     
-                    {/* Left Group: Rich Text Formatting Buttons & Emoji Picker */}
+                    {/* Left Group: Rich Text Formatting Buttons, Selection Tools & Emoji Picker */}
                     <div className="flex items-center gap-0.5 sm:gap-1">
                       {/* BOLD BUTTON */}
                       <button
                         type="button"
+                        onMouseDown={(e) => e.preventDefault()}
                         onClick={() => executeFormat('bold')}
-                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
                         title="Bold (Ctrl+B)"
                         aria-label="Bold"
                       >
@@ -1174,8 +1211,9 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                       {/* ITALIC BUTTON */}
                       <button
                         type="button"
+                        onMouseDown={(e) => e.preventDefault()}
                         onClick={() => executeFormat('italic')}
-                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
                         title="Italic (Ctrl+I)"
                         aria-label="Italic"
                       >
@@ -1185,8 +1223,9 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                       {/* UNDERLINE BUTTON */}
                       <button
                         type="button"
+                        onMouseDown={(e) => e.preventDefault()}
                         onClick={() => executeFormat('underline')}
-                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
                         title="Underline (Ctrl+U)"
                         aria-label="Underline"
                       >
@@ -1196,8 +1235,9 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                       {/* HEADING BUTTON */}
                       <button
                         type="button"
+                        onMouseDown={(e) => e.preventDefault()}
                         onClick={() => executeFormat('formatBlock', '<h3>')}
-                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
                         title="Heading"
                         aria-label="Heading"
                       >
@@ -1207,8 +1247,9 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                       {/* QUOTE BUTTON */}
                       <button
                         type="button"
+                        onMouseDown={(e) => e.preventDefault()}
                         onClick={() => executeFormat('formatBlock', '<blockquote>')}
-                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
                         title="Quote Block"
                         aria-label="Quote Block"
                       >
@@ -1218,20 +1259,66 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                       {/* LIST BUTTON */}
                       <button
                         type="button"
+                        onMouseDown={(e) => e.preventDefault()}
                         onClick={() => executeFormat('insertUnorderedList')}
-                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
                         title="Bullet List"
                         aria-label="Bullet List"
                       >
                         <List className="w-3.5 h-3.5" />
                       </button>
 
+                      <div className="h-4 w-[1px] bg-stone-300 dark:bg-stone-700 mx-0.5" />
+
+                      {/* SELECT ALL TEXT OPTION */}
+                      <button
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={handleSelectAll}
+                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors flex items-center gap-1 cursor-pointer"
+                        title="Select All Text in Entry (Ctrl+A)"
+                        aria-label="Select All Text"
+                      >
+                        <svg className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                        </svg>
+                        <span className="text-[11px] font-semibold hidden md:inline">Select All</span>
+                      </button>
+
+                      {/* COPY SELECTED TEXT OR ENTIRE NOTE */}
+                      <button
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={handleCopySelection}
+                        className={`p-1.5 rounded-lg transition-colors flex items-center gap-1 cursor-pointer ${
+                          copiedFeedback
+                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold'
+                            : 'hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200'
+                        }`}
+                        title="Copy Selected Text (or Entire Page)"
+                        aria-label="Copy Text"
+                      >
+                        {copiedFeedback ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                            <span className="text-[11px] font-semibold">Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" />
+                            <span className="text-[11px] font-semibold hidden lg:inline">Copy</span>
+                          </>
+                        )}
+                      </button>
+
+                      <div className="h-4 w-[1px] bg-stone-300 dark:bg-stone-700 mx-0.5" />
+
                       {/* EMOJI PICKER POPOVER TRIGGER */}
                       <div className="relative" ref={emojiPickerRef}>
                         <button
                           type="button"
                           onClick={() => setEmojiPickerOpen(!emojiPickerOpen)}
-                          className={`p-1.5 rounded-lg transition-colors flex items-center gap-1 ${
+                          className={`p-1.5 rounded-lg transition-colors flex items-center gap-1 cursor-pointer ${
                             emojiPickerOpen
                               ? 'bg-brand text-stone-900 font-bold'
                               : 'hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200'
@@ -1316,8 +1403,9 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                       <div className="flex items-center gap-1 bg-stone-200/50 dark:bg-stone-800/50 rounded-lg p-0.5">
                         <button
                           type="button"
+                          onMouseDown={(e) => e.preventDefault()}
                           onClick={handleSizeDown}
-                          className="px-1.5 py-0.5 rounded text-[11px] font-bold text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
+                          className="px-1.5 py-0.5 rounded text-[11px] font-bold text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors cursor-pointer"
                           title="Decrease Text Size"
                         >
                           A⁻
@@ -1327,8 +1415,9 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                         </span>
                         <button
                           type="button"
+                          onMouseDown={(e) => e.preventDefault()}
                           onClick={handleSizeUp}
-                          className="px-1.5 py-0.5 rounded text-[11px] font-bold text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
+                          className="px-1.5 py-0.5 rounded text-[11px] font-bold text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors cursor-pointer"
                           title="Increase Text Size (Size Up)"
                         >
                           A⁺

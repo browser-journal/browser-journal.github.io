@@ -152,16 +152,15 @@ async function saveAllEntriesEncrypted(entries: JournalEntry[], key: CryptoKey):
 /**
  * Loads all journal entries, decrypting if necessary.
  */
-export async function loadEntries(key?: CryptoKey | null, locale = 'en'): Promise<JournalEntry[]> {
+export async function loadEntries(key?: CryptoKey | null, _locale = 'en'): Promise<JournalEntry[]> {
   if (typeof window === 'undefined') return [];
 
   try {
     const raw = localStorage.getItem(STORAGE_KEY_ENTRIES);
     if (!raw) {
-      // First time initialization
-      const sample = [getWelcomeEntry(locale)];
-      localStorage.setItem(STORAGE_KEY_ENTRIES, JSON.stringify(sample));
-      return sample;
+      // First time initialization: start clean with 0 sample entries
+      localStorage.setItem(STORAGE_KEY_ENTRIES, JSON.stringify([]));
+      return [];
     }
 
     const parsed = JSON.parse(raw);
@@ -173,12 +172,22 @@ export async function loadEntries(key?: CryptoKey | null, locale = 'en'): Promis
         return [];
       }
       const decryptedJson = await decryptData(parsed.ciphertext, parsed.iv, key);
-      return JSON.parse(decryptedJson);
+      const decryptedEntries: JournalEntry[] = JSON.parse(decryptedJson);
+      return decryptedEntries.filter(
+        (e) => e.id !== 'welcome-entry-intro' && !e.tags?.includes('welcome') && !e.title?.includes('Welcome to DailyDiary')
+      );
     }
 
     // Unencrypted standard array
     if (Array.isArray(parsed)) {
-      return parsed;
+      // Clean out any legacy sample welcome entry so journal is clean
+      const filtered = parsed.filter(
+        (e) => e.id !== 'welcome-entry-intro' && !e.tags?.includes('welcome') && !e.title?.includes('Welcome to DailyDiary')
+      );
+      if (filtered.length !== parsed.length) {
+        localStorage.setItem(STORAGE_KEY_ENTRIES, JSON.stringify(filtered));
+      }
+      return filtered;
     }
   } catch (err) {
     console.error('Error loading journal entries:', err);

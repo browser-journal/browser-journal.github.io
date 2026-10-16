@@ -128,6 +128,20 @@ body {
   min-height: 360px;
   outline: none;
   word-break: break-word;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  cursor: text;
+}
+
+/* Custom aesthetic pastel text selection highlight */
+::selection {
+  background-color: rgba(149, 225, 211, 0.45);
+  color: inherit;
+}
+
+.dark ::selection {
+  background-color: rgba(149, 225, 211, 0.35);
+  color: inherit;
 }
 
 .journal-rich-content:empty:before {
