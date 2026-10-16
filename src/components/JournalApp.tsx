@@ -31,6 +31,10 @@ import {
   Calendar,
   Check,
   AlignLeft,
+  Smile,
+  Book,
+  BookOpen,
+  Image as ImageIcon,
 } from 'lucide-react';
 import type {
   JournalEntry,
@@ -62,6 +66,13 @@ import {
   saveThemeConfig,
   adjustHexColor,
 } from '../utils/theme';
+import type { CoverConfig } from '../utils/cover';
+import {
+  COVER_PRESETS,
+  loadStoredCoverConfig,
+  saveCoverConfig,
+} from '../utils/cover';
+import { EMOJI_CATEGORIES } from '../utils/emojis';
 import {
   getLocalTodayStr,
   shiftDateStr,
@@ -104,6 +115,12 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved');
 
   // Aesthetic Book Configuration
+  const [bookView, setBookView] = useState<'page' | 'cover'>('page');
+  const [pageTurnAnim, setPageTurnAnim] = useState<'next' | 'prev' | null>(null);
+  const [coverConfig, setCoverConfig] = useState<CoverConfig>(() => loadStoredCoverConfig());
+  const [showCoverModal, setShowCoverModal] = useState<boolean>(false);
+  const [customCoverUrlInput, setCustomCoverUrlInput] = useState<string>('');
+
   const [paperStyle, setPaperStyle] = useState<'lined' | 'blank' | 'dots'>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('daily_diary_paper_style') as 'lined' | 'blank' | 'dots') || 'lined';
@@ -121,6 +138,9 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [moodPickerOpen, setMoodPickerOpen] = useState<boolean>(false);
   const [paperPickerOpen, setPaperPickerOpen] = useState<boolean>(false);
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState<boolean>(false);
+  const [selectedEmojiCategory, setSelectedEmojiCategory] = useState<string>('aesthetic');
+  const [emojiSearch, setEmojiSearch] = useState<string>('');
   const [promptBannerOpen, setPromptBannerOpen] = useState<boolean>(false);
   const [zenMode, setZenMode] = useState<boolean>(false);
   const [currentPromptIdx, setCurrentPromptIdx] = useState<number>(0);
@@ -148,6 +168,7 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
   const editorRef = useRef<HTMLDivElement | null>(null);
   const moodPickerRef = useRef<HTMLDivElement | null>(null);
   const paperPickerRef = useRef<HTMLDivElement | null>(null);
+  const emojiPickerRef = useRef<HTMLDivElement | null>(null);
 
   // Close popovers on click outside
   useEffect(() => {
@@ -157,6 +178,9 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
       }
       if (paperPickerRef.current && !paperPickerRef.current.contains(e.target as Node)) {
         setPaperPickerOpen(false);
+      }
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(e.target as Node)) {
+        setEmojiPickerOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -172,11 +196,15 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
     const handleOpenTheme = () => setShowThemeModal(true);
     const handleOpenPin = () => setShowPinSetupModal(true);
     const handleOpenExport = () => setShowExportModal(true);
+    const handleToggleCover = () => setBookView((prev) => (prev === 'cover' ? 'page' : 'cover'));
+    const handleOpenCoverModal = () => setShowCoverModal(true);
 
     window.addEventListener('toggle-sidebar', handleToggleSidebar);
     window.addEventListener('open-theme-modal', handleOpenTheme);
     window.addEventListener('open-pin-modal', handleOpenPin);
     window.addEventListener('open-export-modal', handleOpenExport);
+    window.addEventListener('toggle-book-cover', handleToggleCover);
+    window.addEventListener('open-cover-modal', handleOpenCoverModal);
 
     const secMeta = getPinSecurityMeta();
     if (secMeta.isEnabled) {
@@ -198,6 +226,8 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
       window.removeEventListener('open-theme-modal', handleOpenTheme);
       window.removeEventListener('open-pin-modal', handleOpenPin);
       window.removeEventListener('open-export-modal', handleOpenExport);
+      window.removeEventListener('toggle-book-cover', handleToggleCover);
+      window.removeEventListener('open-cover-modal', handleOpenCoverModal);
     };
   }, [currentLocale]);
 
@@ -235,9 +265,14 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
     }
   };
 
-  // Switch Date with Immediate Auto-Save Flush
-  const handleDateChange = (newDateStr: string) => {
+  // Switch Date with Immediate Auto-Save Flush & Page Turn Animation
+  const handleDateChange = (newDateStr: string, direction?: 'next' | 'prev') => {
     if (!newDateStr || newDateStr === activeDate) return;
+
+    if (direction) {
+      setPageTurnAnim(direction);
+      setTimeout(() => setPageTurnAnim(null), 480);
+    }
 
     // Flush current in-progress note if modified
     if (activeEntryId && (title.trim() || content.trim())) {
@@ -260,19 +295,86 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
     initActiveEntry(entries, newDateStr);
   };
 
-  // Day Navigation (Forward / Backward)
+  // Day Navigation (Forward / Backward) with 3D Page Turn Animation
   const handlePrevDay = () => {
     const prevDate = shiftDateStr(activeDate, -1);
-    handleDateChange(prevDate);
+    handleDateChange(prevDate, 'prev');
   };
 
   const handleNextDay = () => {
     const nextDate = shiftDateStr(activeDate, 1);
-    handleDateChange(nextDate);
+    handleDateChange(nextDate, 'next');
   };
 
   const handleJumpToToday = () => {
     handleDateChange(getLocalTodayStr());
+  };
+
+  // Emoji Insertion at Caret in Journal Editor
+  const handleInsertEmoji = (emoji: string) => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+      const success = document.execCommand('insertText', false, emoji);
+      if (!success) {
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0) {
+          const range = sel.getRangeAt(0);
+          range.deleteContents();
+          range.insertNode(document.createTextNode(emoji));
+          range.collapse(false);
+        }
+      }
+      handleContentInput();
+    }
+  };
+
+  // Cover Configuration Handlers
+  const handleSelectCoverPreset = (presetId: string) => {
+    const updated: CoverConfig = {
+      ...coverConfig,
+      presetId,
+      customImageUrl: undefined,
+    };
+    setCoverConfig(updated);
+    saveCoverConfig(updated);
+  };
+
+  const handleUploadCoverImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (dataUrl) {
+        const updated: CoverConfig = {
+          ...coverConfig,
+          customImageUrl: dataUrl,
+        };
+        setCoverConfig(updated);
+        saveCoverConfig(updated);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleApplyCustomCoverUrl = () => {
+    if (!customCoverUrlInput.trim()) return;
+    const updated: CoverConfig = {
+      ...coverConfig,
+      customImageUrl: customCoverUrlInput.trim(),
+    };
+    setCoverConfig(updated);
+    saveCoverConfig(updated);
+    setCustomCoverUrlInput('');
+  };
+
+  const handleCoverTextChange = (field: 'title' | 'subtitle' | 'monogram', val: string) => {
+    const updated: CoverConfig = {
+      ...coverConfig,
+      [field]: val,
+    };
+    setCoverConfig(updated);
+    saveCoverConfig(updated);
   };
 
   const handleSelectEntry = (entry: JournalEntry) => {
@@ -592,6 +694,18 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
     return MOOD_ITEMS.find((m) => m.id === mood) || MOOD_ITEMS[0];
   }, [mood]);
 
+  const currentCoverPreset = useMemo(() => {
+    return COVER_PRESETS.find((p) => p.id === coverConfig.presetId) || COVER_PRESETS[0];
+  }, [coverConfig.presetId]);
+
+  const activeCategoryEmojis = useMemo(() => {
+    const cat = EMOJI_CATEGORIES.find((c) => c.id === selectedEmojiCategory) || EMOJI_CATEGORIES[0];
+    if (!emojiSearch.trim()) return cat.emojis;
+    const q = emojiSearch.toLowerCase().trim();
+    const all = EMOJI_CATEGORIES.flatMap((c) => c.emojis);
+    return Array.from(new Set(all)).filter((e) => e.includes(q));
+  }, [selectedEmojiCategory, emojiSearch]);
+
   const currentActiveEntry: JournalEntry = useMemo(() => {
     return {
       id: activeEntryId,
@@ -838,175 +952,389 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
       {/* ========================================================================= */}
       {/* THE AESTHETIC JOURNALING BOOK CANVAS                                      */}
       {/* ========================================================================= */}
-      <div className="max-w-3xl mx-auto w-full flex-1 flex flex-col">
+      {/* ========================================================================= */}
+      {/* THE AESTHETIC JOURNALING BOOK CANVAS (COVER OR OPEN NOTEBOOK)             */}
+      {/* ========================================================================= */}
+      <div className="max-w-3xl mx-auto w-full flex-1 flex flex-col book-perspective">
         
-        {/* PROMINENT, UNMISTAKABLE DAY NAVIGATION BAR */}
-        {!zenMode && (
-          <div className="flex items-center justify-between gap-2 mb-3 px-1 sm:px-2">
-            
-            {/* PREVIOUS DAY (Yesterday) */}
-            <button
-              type="button"
-              onClick={handlePrevDay}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-editorial-lightSurface dark:bg-editorial-darkSurface hover:border-brand hover:text-brand text-editorial-ink dark:text-stone-200 text-xs font-semibold shadow-subtle transition-all active:scale-95 cursor-pointer"
-              title="Go to Previous Day"
+        {bookView === 'cover' ? (
+          /* ========================================================================= */
+          /* THE CLOSED HARDCOVER BOOK VIEW (Custom Cover Art & Embossed Title)       */
+          /* ========================================================================= */
+          <div className="w-full max-w-lg mx-auto flex-1 flex flex-col items-center justify-center py-6 px-2 animate-in fade-in zoom-in-95 duration-300">
+            <div
+              className="w-full aspect-[3/4.2] max-w-md rounded-3xl p-8 sm:p-12 shadow-2xl relative flex flex-col justify-between overflow-hidden border-4 border-stone-900/10 dark:border-stone-100/10 page-stack-edges transition-all"
+              style={{
+                background: coverConfig.customImageUrl
+                  ? `url(${coverConfig.customImageUrl}) center/cover no-repeat`
+                  : currentCoverPreset.backgroundStyle,
+                color: currentCoverPreset.textColor,
+              }}
             >
-              <ChevronLeft className="w-4 h-4 text-brand" />
-              <span className="hidden sm:inline">Yesterday</span>
-            </button>
+              {/* Spine Crease on Left */}
+              <div className="absolute inset-y-0 left-0 w-8 book-spine-crease pointer-events-none" />
+              <div className="absolute inset-y-0 left-8 w-[1px] bg-black/15 dark:bg-white/10 pointer-events-none" />
 
-            {/* DATE DISPLAY & TODAY JUMPER */}
-            <div className="flex items-center gap-2">
-              <span className="font-journal font-bold text-sm sm:text-base text-editorial-ink dark:text-stone-100">
-                {formatDisplayDate(activeDate, currentLocale, {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}
-              </span>
-              {isTodayStr(activeDate) ? (
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand/10 text-brand border border-brand/20">
-                  {dict.sidebar.today}
-                </span>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleJumpToToday}
-                  className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FCE38A] hover:bg-[#ebd279] text-stone-900 shadow-subtle border border-[#ebd279] transition-all cursor-pointer"
-                  title="Jump back to Today"
+              {/* Decorative Gold Inset Border Frame */}
+              <div
+                className="absolute inset-4 sm:inset-6 rounded-2xl pointer-events-none border-2 border-dashed"
+                style={{ borderColor: currentCoverPreset.accentBorder }}
+              />
+
+              {/* Ribbon Bookmark Hanging Down from Top */}
+              <div
+                className="absolute top-0 right-10 w-6 h-14 shadow-lg rounded-b-[2px] pointer-events-none z-10"
+                style={{ backgroundColor: '#F38181' }}
+              >
+                <div className="w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-b-[8px] border-b-black/15 absolute bottom-0 left-0" />
+              </div>
+
+              {/* Ribbon Bookmark Tip Peeking from Bottom Page Stack */}
+              <div
+                className="absolute bottom-0 right-14 w-5 h-6 shadow-sm rounded-t-[2px] pointer-events-none opacity-80"
+                style={{ backgroundColor: '#F38181' }}
+              />
+
+              {/* Top Header / Monogram Medallion */}
+              <div className="relative z-10 text-center pt-4">
+                <div
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto flex items-center justify-center font-journal font-bold text-2xl sm:text-3xl shadow-elevation backdrop-blur-md border-2"
+                  style={{ borderColor: currentCoverPreset.accentBorder, backgroundColor: 'rgba(0,0,0,0.12)' }}
                 >
-                  Return to Today
-                </button>
-              )}
-            </div>
-
-            {/* NEXT DAY (Tomorrow) - FULLY WORKING & RESPONSIVE */}
-            <button
-              type="button"
-              onClick={handleNextDay}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-editorial-lightSurface dark:bg-editorial-darkSurface hover:border-brand hover:text-brand text-editorial-ink dark:text-stone-200 text-xs font-semibold shadow-subtle transition-all active:scale-95 cursor-pointer"
-              title="Go to Next Day"
-            >
-              <span className="hidden sm:inline">Tomorrow</span>
-              <ChevronRight className="w-4 h-4 text-brand" />
-            </button>
-          </div>
-        )}
-
-        {/* THE PHYSICAL JOURNAL NOTEBOOK PAGE */}
-        <div className="relative flex-1 flex flex-col rounded-2xl sm:rounded-3xl bg-[#FDFBF7] dark:bg-[#1A1816] border border-stone-200/90 dark:border-stone-800/90 book-shadow overflow-hidden transition-all duration-300">
-          
-          {/* Notebook Spine Accent (Left Leather/Linen Trim) */}
-          <div className="absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-stone-300/40 via-stone-200/20 to-transparent dark:from-stone-900 dark:via-stone-950/40 border-r border-stone-200/60 dark:border-stone-800/60 pointer-events-none" />
-
-          {/* Satin Bookmark Ribbon (Top-Right Corner) */}
-          <div
-            className="absolute top-0 right-8 w-5 h-9 shadow-md rounded-b-[2px] pointer-events-none z-10 hidden sm:block opacity-95 transition-all"
-            style={{ backgroundColor: '#F38181' }}
-          >
-            <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[6px] border-b-[#FDFBF7] dark:border-b-[#1A1816] absolute bottom-0 left-0" />
-          </div>
-
-          {/* ===================================================================== */}
-          {/* RICH FORMATTING & WRITING TOOLBAR (Bold, Size Up, Paper Style, etc.) */}
-          {/* ===================================================================== */}
-          {!zenMode && (
-            <div className="p-2 sm:px-6 sm:py-2.5 border-b border-stone-200/70 dark:border-stone-800/70 bg-[#F7F4EE]/90 dark:bg-[#151413]/90 flex items-center justify-between gap-1.5 sm:gap-2 flex-wrap text-xs text-stone-700 dark:text-stone-300 no-print pl-6">
-              
-              {/* Left Group: Rich Text Formatting Buttons */}
-              <div className="flex items-center gap-0.5 sm:gap-1">
-                {/* BOLD BUTTON */}
-                <button
-                  type="button"
-                  onClick={() => executeFormat('bold')}
-                  className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
-                  title="Bold (Ctrl+B)"
-                  aria-label="Bold"
-                >
-                  <Bold className="w-3.5 h-3.5 stroke-[2.5]" />
-                </button>
-
-                {/* ITALIC BUTTON */}
-                <button
-                  type="button"
-                  onClick={() => executeFormat('italic')}
-                  className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
-                  title="Italic (Ctrl+I)"
-                  aria-label="Italic"
-                >
-                  <Italic className="w-3.5 h-3.5" />
-                </button>
-
-                {/* UNDERLINE BUTTON */}
-                <button
-                  type="button"
-                  onClick={() => executeFormat('underline')}
-                  className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
-                  title="Underline (Ctrl+U)"
-                  aria-label="Underline"
-                >
-                  <Underline className="w-3.5 h-3.5" />
-                </button>
-
-                {/* HEADING BUTTON */}
-                <button
-                  type="button"
-                  onClick={() => executeFormat('formatBlock', '<h3>')}
-                  className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
-                  title="Heading"
-                  aria-label="Heading"
-                >
-                  <Heading className="w-3.5 h-3.5" />
-                </button>
-
-                {/* QUOTE BUTTON */}
-                <button
-                  type="button"
-                  onClick={() => executeFormat('formatBlock', '<blockquote>')}
-                  className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
-                  title="Quote Block"
-                  aria-label="Quote Block"
-                >
-                  <Quote className="w-3.5 h-3.5" />
-                </button>
-
-                {/* LIST BUTTON */}
-                <button
-                  type="button"
-                  onClick={() => executeFormat('insertUnorderedList')}
-                  className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
-                  title="Bullet List"
-                  aria-label="Bullet List"
-                >
-                  <List className="w-3.5 h-3.5" />
-                </button>
-
-                <div className="h-4 w-[1px] bg-stone-300 dark:bg-stone-700 mx-1" />
-
-                {/* SIZE DOWN / SIZE UP CONTROLS */}
-                <div className="flex items-center gap-1 bg-stone-200/50 dark:bg-stone-800/50 rounded-lg p-0.5">
-                  <button
-                    type="button"
-                    onClick={handleSizeDown}
-                    className="px-1.5 py-0.5 rounded text-[11px] font-bold text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
-                    title="Decrease Text Size"
-                  >
-                    A⁻
-                  </button>
-                  <span className="text-[10px] font-mono font-medium text-stone-500 px-1">
-                    {fontSizePx}px
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleSizeUp}
-                    className="px-1.5 py-0.5 rounded text-[11px] font-bold text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
-                    title="Increase Text Size (Size Up)"
-                  >
-                    A⁺
-                  </button>
+                  <span className="gold-emboss">{coverConfig.monogram || 'D'}</span>
                 </div>
               </div>
+
+              {/* Center Title and Subtitle */}
+              <div className="relative z-10 text-center px-4 my-auto">
+                <h1 className="font-journal font-bold text-2xl sm:text-4xl tracking-wider uppercase gold-emboss leading-tight">
+                  {coverConfig.title || 'My Daily Diary'}
+                </h1>
+                <div className="w-16 h-[2px] mx-auto my-3 opacity-60" style={{ backgroundColor: currentCoverPreset.textColor }} />
+                <p className="text-xs sm:text-sm tracking-widest font-mono uppercase opacity-85">
+                  {coverConfig.subtitle || '100% Private Browser Journal'}
+                </p>
+              </div>
+
+              {/* Bottom Cover Action Buttons */}
+              <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBookView('page');
+                    confetti({ particleCount: 50, spread: 60 });
+                  }}
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white/95 dark:bg-stone-900/95 text-stone-900 dark:text-stone-100 font-bold text-xs shadow-elevation hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 backdrop-blur cursor-pointer"
+                >
+                  <BookOpen className="w-4 h-4 text-brand" />
+                  <span>Open Journal</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowCoverModal(true)}
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-black/20 hover:bg-black/35 text-current border border-current/30 font-semibold text-xs shadow-subtle hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1.5 backdrop-blur cursor-pointer"
+                >
+                  <ImageIcon className="w-4 h-4" />
+                  <span>Customize Cover</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* ========================================================================= */
+          /* THE OPEN HARDCOVER NOTEBOOK CANVAS (Pages & Writing)                      */
+          /* ========================================================================= */
+          <>
+            {/* PROMINENT, UNMISTAKABLE DAY NAVIGATION BAR */}
+            {!zenMode && (
+              <div className="flex items-center justify-between gap-2 mb-3 px-1 sm:px-2">
+                
+                {/* PREVIOUS DAY (Yesterday) */}
+                <button
+                  type="button"
+                  onClick={handlePrevDay}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-editorial-lightSurface dark:bg-editorial-darkSurface hover:border-brand hover:text-brand text-editorial-ink dark:text-stone-200 text-xs font-semibold shadow-subtle transition-all active:scale-95 cursor-pointer"
+                  title="Go to Previous Day (Turn Page)"
+                >
+                  <ChevronLeft className="w-4 h-4 text-brand" />
+                  <span className="hidden sm:inline">Yesterday</span>
+                </button>
+
+                {/* DATE DISPLAY, COVER SWITCHER & TODAY JUMPER */}
+                <div className="flex items-center gap-2">
+                  {/* View Book Cover Button */}
+                  <button
+                    type="button"
+                    onClick={() => setBookView('cover')}
+                    className="p-1.5 sm:px-2.5 sm:py-1 rounded-lg border border-stone-200/90 dark:border-stone-800/90 bg-stone-100/70 dark:bg-stone-800/70 hover:border-brand text-stone-700 dark:text-stone-300 text-xs font-medium flex items-center gap-1 shadow-subtle transition-all"
+                    title="Close book and view hardcover"
+                  >
+                    <Book className="w-3.5 h-3.5 text-brand" />
+                    <span className="hidden md:inline">Cover</span>
+                  </button>
+
+                  <span className="font-journal font-bold text-sm sm:text-base text-editorial-ink dark:text-stone-100">
+                    {formatDisplayDate(activeDate, currentLocale, {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </span>
+                  {isTodayStr(activeDate) ? (
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand/10 text-brand border border-brand/20">
+                      {dict.sidebar.today}
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleJumpToToday}
+                      className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FCE38A] hover:bg-[#ebd279] text-stone-900 shadow-subtle border border-[#ebd279] transition-all cursor-pointer"
+                      title="Jump back to Today"
+                    >
+                      Return to Today
+                    </button>
+                  )}
+
+                  {/* Configure Cover Art Pill */}
+                  <button
+                    type="button"
+                    onClick={() => setShowCoverModal(true)}
+                    className="p-1.5 rounded-lg border border-stone-200/90 dark:border-stone-800/90 bg-stone-100/70 dark:bg-stone-800/70 hover:border-brand text-stone-600 dark:text-stone-300 text-xs font-medium shadow-subtle transition-all"
+                    title="Change Book Cover Image & Style"
+                  >
+                    <ImageIcon className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                {/* NEXT DAY (Tomorrow) - FULLY WORKING & RESPONSIVE WITH PAGE TURN */}
+                <button
+                  type="button"
+                  onClick={handleNextDay}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-editorial-lightSurface dark:bg-editorial-darkSurface hover:border-brand hover:text-brand text-editorial-ink dark:text-stone-200 text-xs font-semibold shadow-subtle transition-all active:scale-95 cursor-pointer"
+                  title="Go to Next Day (Turn Page)"
+                >
+                  <span className="hidden sm:inline">Tomorrow</span>
+                  <ChevronRight className="w-4 h-4 text-brand" />
+                </button>
+              </div>
+            )}
+
+            {/* HARDCOVER BACKING FRAME WRAPPING OPEN PAGES */}
+            <div
+              className="relative flex-1 flex flex-col p-1 sm:p-2 rounded-[22px] sm:rounded-[30px] transition-all"
+              style={{
+                background: coverConfig.customImageUrl
+                  ? `url(${coverConfig.customImageUrl}) center/cover no-repeat`
+                  : currentCoverPreset.backgroundStyle,
+              }}
+            >
+              {/* THE PHYSICAL JOURNAL NOTEBOOK PAGE LEAF */}
+              <div
+                className={`relative flex-1 flex flex-col rounded-2xl sm:rounded-3xl bg-[#FDFBF7] dark:bg-[#1A1816] border border-stone-200/90 dark:border-stone-800/90 page-stack-edges page-leaf overflow-hidden transition-all duration-300 ${
+                  pageTurnAnim === 'next'
+                    ? 'anim-page-turn-next'
+                    : pageTurnAnim === 'prev'
+                    ? 'anim-page-turn-prev'
+                    : ''
+                }`}
+              >
+                
+                {/* Notebook Spine Accent (Left Leather/Linen Trim) */}
+                <div className="absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-stone-300/40 via-stone-200/20 to-transparent dark:from-stone-900 dark:via-stone-950/40 border-r border-stone-200/60 dark:border-stone-800/60 pointer-events-none" />
+
+                {/* Satin Bookmark Ribbon (Top-Right Corner) */}
+                <div
+                  className="absolute top-0 right-8 w-5 h-9 shadow-md rounded-b-[2px] pointer-events-none z-10 hidden sm:block opacity-95 transition-all"
+                  style={{ backgroundColor: '#F38181' }}
+                >
+                  <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[6px] border-b-[#FDFBF7] dark:border-b-[#1A1816] absolute bottom-0 left-0" />
+                </div>
+
+                {/* ===================================================================== */}
+                {/* RICH FORMATTING & WRITING TOOLBAR (Bold, Emoji, Size Up, Paper, etc.) */}
+                {/* ===================================================================== */}
+                {!zenMode && (
+                  <div className="p-2 sm:px-6 sm:py-2.5 border-b border-stone-200/70 dark:border-stone-800/70 bg-[#F7F4EE]/90 dark:bg-[#151413]/90 flex items-center justify-between gap-1.5 sm:gap-2 flex-wrap text-xs text-stone-700 dark:text-stone-300 no-print pl-6">
+                    
+                    {/* Left Group: Rich Text Formatting Buttons & Emoji Picker */}
+                    <div className="flex items-center gap-0.5 sm:gap-1">
+                      {/* BOLD BUTTON */}
+                      <button
+                        type="button"
+                        onClick={() => executeFormat('bold')}
+                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
+                        title="Bold (Ctrl+B)"
+                        aria-label="Bold"
+                      >
+                        <Bold className="w-3.5 h-3.5 stroke-[2.5]" />
+                      </button>
+
+                      {/* ITALIC BUTTON */}
+                      <button
+                        type="button"
+                        onClick={() => executeFormat('italic')}
+                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
+                        title="Italic (Ctrl+I)"
+                        aria-label="Italic"
+                      >
+                        <Italic className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* UNDERLINE BUTTON */}
+                      <button
+                        type="button"
+                        onClick={() => executeFormat('underline')}
+                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
+                        title="Underline (Ctrl+U)"
+                        aria-label="Underline"
+                      >
+                        <Underline className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* HEADING BUTTON */}
+                      <button
+                        type="button"
+                        onClick={() => executeFormat('formatBlock', '<h3>')}
+                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
+                        title="Heading"
+                        aria-label="Heading"
+                      >
+                        <Heading className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* QUOTE BUTTON */}
+                      <button
+                        type="button"
+                        onClick={() => executeFormat('formatBlock', '<blockquote>')}
+                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
+                        title="Quote Block"
+                        aria-label="Quote Block"
+                      >
+                        <Quote className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* LIST BUTTON */}
+                      <button
+                        type="button"
+                        onClick={() => executeFormat('insertUnorderedList')}
+                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors"
+                        title="Bullet List"
+                        aria-label="Bullet List"
+                      >
+                        <List className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* EMOJI PICKER POPOVER TRIGGER */}
+                      <div className="relative" ref={emojiPickerRef}>
+                        <button
+                          type="button"
+                          onClick={() => setEmojiPickerOpen(!emojiPickerOpen)}
+                          className={`p-1.5 rounded-lg transition-colors flex items-center gap-1 ${
+                            emojiPickerOpen
+                              ? 'bg-brand text-stone-900 font-bold'
+                              : 'hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200'
+                          }`}
+                          title="Insert Emojis & Aesthetic Symbols"
+                          aria-label="Insert Emoji"
+                        >
+                          <Smile className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" />
+                          <span className="text-[11px] font-semibold hidden md:inline">Emoji</span>
+                        </button>
+
+                        {/* EMOJI FLOATING PALETTE */}
+                        {emojiPickerOpen && (
+                          <div className="absolute left-0 mt-2 w-72 sm:w-80 rounded-2xl bg-editorial-lightSurface dark:bg-editorial-darkSurface border border-stone-200 dark:border-stone-800 shadow-elevation p-3 z-40 animate-in fade-in duration-150">
+                            
+                            {/* Emoji Search Input */}
+                            <div className="relative mb-2">
+                              <Search className="w-3 h-3 absolute left-2.5 top-2.5 text-stone-400" />
+                              <input
+                                type="text"
+                                placeholder="Search emojis..."
+                                value={emojiSearch}
+                                onChange={(e) => setEmojiSearch(e.target.value)}
+                                className="w-full pl-7 pr-3 py-1.5 text-xs rounded-xl border border-editorial-borderLight dark:border-editorial-borderDark bg-stone-50 dark:bg-stone-900 text-editorial-ink dark:text-stone-200 focus:outline-none focus:ring-1 focus:ring-brand"
+                              />
+                              {emojiSearch && (
+                                <button onClick={() => setEmojiSearch('')} className="absolute right-2 top-2 text-stone-400">
+                                  <X className="w-3 h-3" />
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Category Switcher Tabs */}
+                            <div className="flex items-center gap-1 pb-2 border-b border-editorial-borderLight dark:border-editorial-borderDark overflow-x-auto no-scrollbar">
+                              {EMOJI_CATEGORIES.map((cat) => (
+                                <button
+                                  key={cat.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedEmojiCategory(cat.id);
+                                    setEmojiSearch('');
+                                  }}
+                                  className={`px-2 py-1 rounded-lg text-xs flex items-center gap-1 whitespace-nowrap transition-colors ${
+                                    selectedEmojiCategory === cat.id && !emojiSearch
+                                      ? 'bg-brand text-stone-900 font-bold'
+                                      : 'text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'
+                                  }`}
+                                >
+                                  <span>{cat.icon}</span>
+                                  <span className="text-[10px] hidden sm:inline">{cat.name.split(' ')[0]}</span>
+                                </button>
+                              ))}
+                            </div>
+
+                            {/* Emoji Grid */}
+                            <div className="grid grid-cols-7 sm:grid-cols-8 gap-1 pt-2 max-h-48 overflow-y-auto custom-scrollbar">
+                              {activeCategoryEmojis.length === 0 ? (
+                                <div className="col-span-full py-4 text-center text-xs text-stone-400">
+                                  No emojis found
+                                </div>
+                              ) : (
+                                activeCategoryEmojis.map((em, idx) => (
+                                  <button
+                                    key={`${em}-${idx}`}
+                                    type="button"
+                                    onClick={() => handleInsertEmoji(em)}
+                                    className="w-8 h-8 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 hover:scale-125 transition-transform flex items-center justify-center text-base sm:text-lg cursor-pointer"
+                                    title={em}
+                                  >
+                                    {em}
+                                  </button>
+                                ))
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="h-4 w-[1px] bg-stone-300 dark:bg-stone-700 mx-1" />
+
+                      {/* SIZE DOWN / SIZE UP CONTROLS */}
+                      <div className="flex items-center gap-1 bg-stone-200/50 dark:bg-stone-800/50 rounded-lg p-0.5">
+                        <button
+                          type="button"
+                          onClick={handleSizeDown}
+                          className="px-1.5 py-0.5 rounded text-[11px] font-bold text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
+                          title="Decrease Text Size"
+                        >
+                          A⁻
+                        </button>
+                        <span className="text-[10px] font-mono font-medium text-stone-500 px-1">
+                          {fontSizePx}px
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleSizeUp}
+                          className="px-1.5 py-0.5 rounded text-[11px] font-bold text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
+                          title="Increase Text Size (Size Up)"
+                        >
+                          A⁺
+                        </button>
+                      </div>
+                    </div>
 
               {/* Right Group: Paper Style, Mood Pill & Inspire Me */}
               <div className="flex items-center gap-1.5 sm:gap-2">
@@ -1222,8 +1550,11 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
           </div>
 
         </div>
-
       </div>
+    </>
+  )}
+
+</div>
 
       {/* ========================================================================= */}
       {/* THEME & COLOR PALETTE MODAL                                               */}
@@ -1563,6 +1894,224 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* COVER CUSTOMIZER MODAL                                                    */}
+      {/* ========================================================================= */}
+      {showCoverModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/40 backdrop-blur-sm animate-in fade-in duration-150 overflow-y-auto">
+          <div className="w-full max-w-lg p-5 sm:p-6 rounded-2xl bg-editorial-lightSurface dark:bg-editorial-darkSurface border border-editorial-borderLight dark:border-editorial-borderDark shadow-elevation my-auto max-h-[90vh] overflow-y-auto custom-scrollbar">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-editorial-borderLight dark:border-editorial-borderDark">
+              <div className="flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-brand" />
+                <h3 className="font-journal font-bold text-base text-editorial-ink dark:text-stone-100">
+                  Configure Book Cover
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCoverModal(false)}
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Live Cover Mini Preview */}
+            <div className="mt-4 flex items-center justify-center">
+              <div
+                className="w-48 aspect-[3/4.2] rounded-2xl p-4 shadow-lg relative flex flex-col justify-between overflow-hidden border border-black/10"
+                style={{
+                  background: coverConfig.customImageUrl
+                    ? `url(${coverConfig.customImageUrl}) center/cover no-repeat`
+                    : currentCoverPreset.backgroundStyle,
+                  color: currentCoverPreset.textColor,
+                }}
+              >
+                <div className="absolute inset-y-0 left-0 w-3 book-spine-crease pointer-events-none" />
+                <div
+                  className="absolute inset-2 rounded-xl pointer-events-none border border-dashed"
+                  style={{ borderColor: currentCoverPreset.accentBorder }}
+                />
+                
+                {/* Ribbon */}
+                <div
+                  className="absolute top-0 right-4 w-3.5 h-8 shadow-sm rounded-b-[1px] pointer-events-none z-10"
+                  style={{ backgroundColor: '#F38181' }}
+                />
+
+                <div className="relative z-10 text-center pt-1">
+                  <div
+                    className="w-8 h-8 rounded-full mx-auto flex items-center justify-center font-journal font-bold text-xs shadow border"
+                    style={{ borderColor: currentCoverPreset.accentBorder, backgroundColor: 'rgba(0,0,0,0.15)' }}
+                  >
+                    <span>{coverConfig.monogram || 'D'}</span>
+                  </div>
+                </div>
+
+                <div className="relative z-10 text-center my-auto px-1">
+                  <div className="font-journal font-bold text-xs tracking-wider uppercase truncate gold-emboss">
+                    {coverConfig.title || 'My Daily Diary'}
+                  </div>
+                  <div className="text-[8px] font-mono tracking-widest uppercase opacity-80 truncate mt-0.5">
+                    {coverConfig.subtitle || 'Private Journal'}
+                  </div>
+                </div>
+
+                <div className="relative z-10 text-center text-[8px] font-mono opacity-60">
+                  Preview
+                </div>
+              </div>
+            </div>
+
+            {/* Curated Presets */}
+            <div className="mt-5">
+              <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider block mb-2">
+                Aesthetic Cover Presets
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {COVER_PRESETS.map((preset) => {
+                  const isSelected = !coverConfig.customImageUrl && coverConfig.presetId === preset.id;
+                  return (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => handleSelectCoverPreset(preset.id)}
+                      className={`p-2 rounded-xl border flex flex-col items-center gap-1.5 transition-all text-center cursor-pointer ${
+                        isSelected
+                          ? 'border-brand ring-2 ring-brand bg-brand/10 shadow-subtle'
+                          : 'border-editorial-borderLight dark:border-editorial-borderDark hover:border-stone-400'
+                      }`}
+                    >
+                      <div
+                        className="w-full h-12 rounded-lg shadow-sm border border-black/10 relative overflow-hidden flex items-center justify-center"
+                        style={{ background: preset.previewGradient }}
+                      >
+                        <div className="w-1.5 h-full absolute left-0 bg-black/20" />
+                        <span className="text-[10px] font-bold" style={{ color: preset.textColor }}>
+                          {preset.name.split(' ')[0]}
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-medium text-editorial-ink dark:text-stone-200 truncate w-full">
+                        {preset.name}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Upload or Custom Image URL */}
+            <div className="mt-5 pt-3 border-t border-editorial-borderLight dark:border-editorial-borderDark space-y-3">
+              <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider block">
+                Custom Cover Image
+              </span>
+
+              {/* Upload File */}
+              <label className="w-full p-2.5 rounded-xl border border-dashed border-stone-300 dark:border-stone-700 hover:border-brand text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition-colors bg-stone-50 dark:bg-stone-900/50">
+                <Upload className="w-3.5 h-3.5 text-brand" />
+                <span>Upload Custom Image from Device</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleUploadCoverImage}
+                  className="hidden"
+                />
+              </label>
+
+              {/* Custom Image URL */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="url"
+                  placeholder="Or enter image URL (e.g. https://...)"
+                  value={customCoverUrlInput}
+                  onChange={(e) => setCustomCoverUrlInput(e.target.value)}
+                  className="flex-1 px-3 py-1.5 text-xs rounded-xl border border-editorial-borderLight dark:border-editorial-borderDark bg-stone-50 dark:bg-stone-900 text-editorial-ink dark:text-stone-200 focus:outline-none focus:ring-1 focus:ring-brand font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={handleApplyCustomCoverUrl}
+                  className="px-3 py-1.5 rounded-xl bg-brand hover:bg-brand-hover text-stone-900 font-bold text-xs shadow-subtle transition-all cursor-pointer"
+                >
+                  Apply
+                </button>
+              </div>
+
+              {coverConfig.customImageUrl && (
+                <div className="flex items-center justify-between text-[11px] text-stone-500 bg-stone-100 dark:bg-stone-800 p-2 rounded-xl">
+                  <span className="truncate max-w-[200px]">Custom Image active</span>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectCoverPreset(coverConfig.presetId || 'pastel-meadow')}
+                    className="text-rose-500 hover:underline font-semibold"
+                  >
+                    Remove custom image
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Embossed Text Personalization */}
+            <div className="mt-5 pt-3 border-t border-editorial-borderLight dark:border-editorial-borderDark space-y-2.5">
+              <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider block">
+                Embossed Cover Typography
+              </span>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div className="col-span-2">
+                  <label className="text-[10px] text-stone-400 block mb-0.5">Diary Title</label>
+                  <input
+                    type="text"
+                    value={coverConfig.title}
+                    onChange={(e) => handleCoverTextChange('title', e.target.value)}
+                    placeholder="My Daily Diary"
+                    className="w-full px-2.5 py-1.5 text-xs rounded-xl border border-editorial-borderLight dark:border-editorial-borderDark bg-stone-50 dark:bg-stone-900 text-editorial-ink dark:text-stone-200 focus:outline-none focus:ring-1 focus:ring-brand"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-stone-400 block mb-0.5">Monogram</label>
+                  <input
+                    type="text"
+                    maxLength={3}
+                    value={coverConfig.monogram}
+                    onChange={(e) => handleCoverTextChange('monogram', e.target.value)}
+                    placeholder="D"
+                    className="w-full text-center px-2.5 py-1.5 text-xs rounded-xl border border-editorial-borderLight dark:border-editorial-borderDark bg-stone-50 dark:bg-stone-900 text-editorial-ink dark:text-stone-200 focus:outline-none focus:ring-1 focus:ring-brand font-bold uppercase"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] text-stone-400 block mb-0.5">Cover Subtitle</label>
+                <input
+                  type="text"
+                  value={coverConfig.subtitle}
+                  onChange={(e) => handleCoverTextChange('subtitle', e.target.value)}
+                  placeholder="100% Private Browser Journal"
+                  className="w-full px-2.5 py-1.5 text-xs rounded-xl border border-editorial-borderLight dark:border-editorial-borderDark bg-stone-50 dark:bg-stone-900 text-editorial-ink dark:text-stone-200 focus:outline-none focus:ring-1 focus:ring-brand"
+                />
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCoverModal(false);
+                  confetti({ particleCount: 30, spread: 50 });
+                }}
+                className="px-5 py-2 rounded-xl bg-brand hover:bg-brand-hover text-stone-900 font-bold text-xs shadow-subtle transition-all cursor-pointer"
+              >
+                Save & Close
+              </button>
+            </div>
+
           </div>
         </div>
       )}
