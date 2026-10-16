@@ -81,6 +81,7 @@ import {
   isTodayStr,
 } from '../utils/date';
 import { htmlToPlainText } from '../utils/htmlMarkdown';
+import { exportFullJournalPDF } from '../utils/pdfExport';
 
 interface JournalAppProps {
   currentLocale: string;
@@ -755,6 +756,25 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
     };
   }, [activeEntryId, activeDate, title, content, mood, promptUsed]);
 
+  // Download entire journal with cover as a PDF book
+  const handleExportFullPDF = () => {
+    const map = new Map<string, JournalEntry>();
+    entries.forEach((e) => map.set(e.date, e));
+    if (currentActiveEntry.content && currentActiveEntry.content.trim() !== '<p><br></p>') {
+      map.set(currentActiveEntry.date, currentActiveEntry);
+    }
+    const list = Array.from(map.values());
+    list.sort((a, b) => a.date.localeCompare(b.date));
+    const entriesToExport = list.length > 0 ? list : [currentActiveEntry];
+
+    exportFullJournalPDF({
+      entries: entriesToExport,
+      coverConfig,
+      currentLocale,
+      dict,
+    });
+  };
+
   if (!isLoaded) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
@@ -1053,7 +1073,7 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
               </div>
 
               {/* Bottom Cover Action Buttons */}
-              <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-4">
+              <div className="relative z-10 flex flex-wrap items-center justify-center gap-2.5 pt-4">
                 <button
                   type="button"
                   onClick={() => {
@@ -1073,6 +1093,16 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                 >
                   <ImageIcon className="w-4 h-4" />
                   <span>Customize Cover</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleExportFullPDF}
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-black/25 hover:bg-black/40 text-current border border-current/35 font-semibold text-xs shadow-subtle hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1.5 backdrop-blur cursor-pointer"
+                  title="Download entire journal with cover as a PDF file"
+                >
+                  <Printer className="w-4 h-4 text-[#FCE38A]" />
+                  <span>Download Book (PDF)</span>
                 </button>
               </div>
             </div>
@@ -1815,6 +1845,33 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
               </div>
               <button onClick={() => setShowExportModal(false)} className="p-1 rounded-lg text-stone-400">
                 <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* FULL JOURNAL WITH COVER AS PDF (PRIMARY EXPORT) */}
+            <div className="mt-4 p-3.5 rounded-xl border border-brand/50 bg-[#EAFFD0]/30 dark:bg-[#EAFFD0]/5 space-y-2.5">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span className="text-xs font-bold text-editorial-ink dark:text-stone-100 flex items-center gap-1.5">
+                    <span>📕</span>
+                    <span>Download Full Journal with Cover (PDF)</span>
+                  </span>
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5 leading-relaxed">
+                    Export your complete diary with custom cover images, table of contents, and all formatted entries as a printable PDF book.
+                  </p>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#95E1D3]/40 text-stone-800 dark:text-[#95E1D3] shrink-0 border border-[#95E1D3]/60">
+                  Full PDF Book
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleExportFullPDF}
+                className="w-full py-2.5 px-3 rounded-xl bg-brand hover:bg-brand-hover text-stone-900 font-bold text-xs shadow-subtle flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
+              >
+                <Printer className="w-4 h-4" />
+                <span>Save Full Journal with Cover (PDF)</span>
               </button>
             </div>
 
