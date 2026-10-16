@@ -1365,7 +1365,7 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
 
                           {/* EMOJI FLOATING PALETTE */}
                           {emojiPickerOpen && (
-                            <div className="absolute left-0 mt-2 w-72 sm:w-80 rounded-2xl bg-editorial-lightSurface dark:bg-editorial-darkSurface border border-stone-200 dark:border-stone-800 shadow-elevation p-3 z-40 animate-in fade-in duration-150">
+                            <div className="absolute -left-16 sm:left-0 mt-2 w-72 sm:w-80 max-w-[calc(100vw-2.5rem)] rounded-2xl bg-editorial-lightSurface dark:bg-editorial-darkSurface border border-stone-200 dark:border-stone-800 shadow-elevation p-3 z-40 animate-in fade-in duration-150">
                               
                               {/* Emoji Search Input */}
                               <div className="relative mb-2">
@@ -1449,36 +1449,36 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                   </button>
 
                   {paperPickerOpen && (
-                    <div className="absolute right-0 mt-2 w-32 rounded-xl bg-editorial-lightSurface dark:bg-editorial-darkSurface border border-stone-200 dark:border-stone-800 shadow-elevation p-1 z-30 animate-in fade-in duration-100 text-xs">
+                    <div className="absolute left-0 mt-2 w-36 sm:w-40 rounded-xl bg-editorial-lightSurface dark:bg-editorial-darkSurface border border-stone-200 dark:border-stone-800 shadow-elevation p-1 z-30 animate-in fade-in duration-100 text-xs">
                       <button
                         type="button"
                         onClick={() => handleSelectPaper('lined')}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between gap-1.5 ${
                           paperStyle === 'lined' ? 'bg-brand/10 text-brand font-bold' : 'hover:bg-stone-100 dark:hover:bg-stone-800'
                         }`}
                       >
-                        <span>📜 Lined Paper</span>
-                        {paperStyle === 'lined' && <Check className="w-3 h-3" />}
+                        <span className="flex items-center gap-1.5 whitespace-nowrap">📜 Lined Paper</span>
+                        {paperStyle === 'lined' && <Check className="w-3 h-3 text-brand shrink-0" />}
                       </button>
                       <button
                         type="button"
                         onClick={() => handleSelectPaper('blank')}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between gap-1.5 ${
                           paperStyle === 'blank' ? 'bg-brand/10 text-brand font-bold' : 'hover:bg-stone-100 dark:hover:bg-stone-800'
                         }`}
                       >
-                        <span>📄 Blank Paper</span>
-                        {paperStyle === 'blank' && <Check className="w-3 h-3" />}
+                        <span className="flex items-center gap-1.5 whitespace-nowrap">📄 Blank Paper</span>
+                        {paperStyle === 'blank' && <Check className="w-3 h-3 text-brand shrink-0" />}
                       </button>
                       <button
                         type="button"
                         onClick={() => handleSelectPaper('dots')}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between gap-1.5 ${
                           paperStyle === 'dots' ? 'bg-brand/10 text-brand font-bold' : 'hover:bg-stone-100 dark:hover:bg-stone-800'
                         }`}
                       >
-                        <span>⠇ Dot Grid</span>
-                        {paperStyle === 'dots' && <Check className="w-3 h-3" />}
+                        <span className="flex items-center gap-1.5 whitespace-nowrap">⠇ Dot Grid</span>
+                        {paperStyle === 'dots' && <Check className="w-3 h-3 text-brand shrink-0" />}
                       </button>
                     </div>
                   )}
@@ -1497,7 +1497,7 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                   </button>
 
                   {moodPickerOpen && (
-                    <div className="absolute right-0 mt-2 w-36 rounded-xl bg-editorial-lightSurface dark:bg-editorial-darkSurface border border-stone-200 dark:border-stone-800 shadow-elevation p-1 z-30 animate-in fade-in duration-100">
+                    <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-36 rounded-xl bg-editorial-lightSurface dark:bg-editorial-darkSurface border border-stone-200 dark:border-stone-800 shadow-elevation p-1 z-30 animate-in fade-in duration-100">
                       {MOOD_ITEMS.map((item) => (
                         <button
                           key={item.id}
