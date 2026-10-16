@@ -523,13 +523,13 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
 
   // Font Size Controls (Size Up & Size Down)
   const handleSizeUp = () => {
-    const next = Math.min(fontSizePx + 2, 28);
+    const next = Math.min(fontSizePx + 2, 34);
     setFontSizePx(next);
     localStorage.setItem('daily_diary_font_size_px', String(next));
   };
 
   const handleSizeDown = () => {
-    const next = Math.max(fontSizePx - 2, 14);
+    const next = Math.max(fontSizePx - 2, 12);
     setFontSizePx(next);
     localStorage.setItem('daily_diary_font_size_px', String(next));
   };
@@ -1192,237 +1192,245 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                 {/* RICH FORMATTING & WRITING TOOLBAR (Bold, Emoji, Size Up, Paper, etc.) */}
                 {/* ===================================================================== */}
                 {!zenMode && (
-                  <div className="p-2 sm:px-6 sm:py-2.5 border-b border-stone-200/70 dark:border-stone-800/70 bg-[#F7F4EE]/90 dark:bg-[#151413]/90 flex items-center justify-between gap-1.5 sm:gap-2 flex-wrap text-xs text-stone-700 dark:text-stone-300 no-print pl-6">
+                  <div className="p-2 sm:px-6 sm:py-2.5 border-b border-stone-200/70 dark:border-stone-800/70 bg-[#F7F4EE]/90 dark:bg-[#151413]/90 flex flex-wrap items-center justify-between gap-2 text-xs text-stone-700 dark:text-stone-300 no-print pl-3 sm:pl-6">
                     
-                    {/* Left Group: Rich Text Formatting Buttons, Selection Tools & Emoji Picker */}
-                    <div className="flex items-center gap-0.5 sm:gap-1">
-                      {/* BOLD BUTTON */}
-                      <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => executeFormat('bold')}
-                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
-                        title="Bold (Ctrl+B)"
-                        aria-label="Bold"
-                      >
-                        <Bold className="w-3.5 h-3.5 stroke-[2.5]" />
-                      </button>
-
-                      {/* ITALIC BUTTON */}
-                      <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => executeFormat('italic')}
-                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
-                        title="Italic (Ctrl+I)"
-                        aria-label="Italic"
-                      >
-                        <Italic className="w-3.5 h-3.5" />
-                      </button>
-
-                      {/* UNDERLINE BUTTON */}
-                      <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => executeFormat('underline')}
-                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
-                        title="Underline (Ctrl+U)"
-                        aria-label="Underline"
-                      >
-                        <Underline className="w-3.5 h-3.5" />
-                      </button>
-
-                      {/* HEADING BUTTON */}
-                      <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => executeFormat('formatBlock', '<h3>')}
-                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
-                        title="Heading"
-                        aria-label="Heading"
-                      >
-                        <Heading className="w-3.5 h-3.5" />
-                      </button>
-
-                      {/* QUOTE BUTTON */}
-                      <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => executeFormat('formatBlock', '<blockquote>')}
-                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
-                        title="Quote Block"
-                        aria-label="Quote Block"
-                      >
-                        <Quote className="w-3.5 h-3.5" />
-                      </button>
-
-                      {/* LIST BUTTON */}
-                      <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => executeFormat('insertUnorderedList')}
-                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
-                        title="Bullet List"
-                        aria-label="Bullet List"
-                      >
-                        <List className="w-3.5 h-3.5" />
-                      </button>
-
-                      <div className="h-4 w-[1px] bg-stone-300 dark:bg-stone-700 mx-0.5" />
-
-                      {/* SELECT ALL TEXT OPTION */}
-                      <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={handleSelectAll}
-                        className="p-1.5 rounded-lg hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors flex items-center gap-1 cursor-pointer"
-                        title="Select All Text in Entry (Ctrl+A)"
-                        aria-label="Select All Text"
-                      >
-                        <svg className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-                        </svg>
-                        <span className="text-[11px] font-semibold hidden md:inline">Select All</span>
-                      </button>
-
-                      {/* COPY SELECTED TEXT OR ENTIRE NOTE */}
-                      <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={handleCopySelection}
-                        className={`p-1.5 rounded-lg transition-colors flex items-center gap-1 cursor-pointer ${
-                          copiedFeedback
-                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold'
-                            : 'hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200'
-                        }`}
-                        title="Copy Selected Text (or Entire Page)"
-                        aria-label="Copy Text"
-                      >
-                        {copiedFeedback ? (
-                          <>
-                            <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                            <span className="text-[11px] font-semibold">Copied!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" />
-                            <span className="text-[11px] font-semibold hidden lg:inline">Copy</span>
-                          </>
-                        )}
-                      </button>
-
-                      <div className="h-4 w-[1px] bg-stone-300 dark:bg-stone-700 mx-0.5" />
-
-                      {/* EMOJI PICKER POPOVER TRIGGER */}
-                      <div className="relative" ref={emojiPickerRef}>
+                    {/* Left: Text Formatting, Font Size, and Edit Tools */}
+                    <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                      
+                      {/* Cluster 1: BOLD, ITALIC, UNDERLINE, HEADING, QUOTE, LIST */}
+                      <div className="flex items-center gap-0.5 bg-stone-200/60 dark:bg-stone-800/60 rounded-xl p-0.5 border border-stone-200/80 dark:border-stone-700/80">
+                        {/* BOLD BUTTON */}
                         <button
                           type="button"
-                          onClick={() => setEmojiPickerOpen(!emojiPickerOpen)}
-                          className={`p-1.5 rounded-lg transition-colors flex items-center gap-1 cursor-pointer ${
-                            emojiPickerOpen
-                              ? 'bg-brand text-stone-900 font-bold'
-                              : 'hover:bg-stone-200/70 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200'
-                          }`}
-                          title="Insert Emojis & Aesthetic Symbols"
-                          aria-label="Insert Emoji"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => executeFormat('bold')}
+                          className="p-1.5 rounded-lg hover:bg-stone-200/80 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
+                          title="Bold (Ctrl+B)"
+                          aria-label="Bold"
                         >
-                          <Smile className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" />
-                          <span className="text-[11px] font-semibold hidden md:inline">Emoji</span>
+                          <Bold className="w-3.5 h-3.5 stroke-[2.5]" />
                         </button>
 
-                        {/* EMOJI FLOATING PALETTE */}
-                        {emojiPickerOpen && (
-                          <div className="absolute left-0 mt-2 w-72 sm:w-80 rounded-2xl bg-editorial-lightSurface dark:bg-editorial-darkSurface border border-stone-200 dark:border-stone-800 shadow-elevation p-3 z-40 animate-in fade-in duration-150">
-                            
-                            {/* Emoji Search Input */}
-                            <div className="relative mb-2">
-                              <Search className="w-3 h-3 absolute left-2.5 top-2.5 text-stone-400" />
-                              <input
-                                type="text"
-                                placeholder="Search emojis..."
-                                value={emojiSearch}
-                                onChange={(e) => setEmojiSearch(e.target.value)}
-                                className="w-full pl-7 pr-3 py-1.5 text-xs rounded-xl border border-editorial-borderLight dark:border-editorial-borderDark bg-stone-50 dark:bg-stone-900 text-editorial-ink dark:text-stone-200 focus:outline-none focus:ring-1 focus:ring-brand"
-                              />
-                              {emojiSearch && (
-                                <button onClick={() => setEmojiSearch('')} className="absolute right-2 top-2 text-stone-400">
-                                  <X className="w-3 h-3" />
-                                </button>
-                              )}
-                            </div>
+                        {/* ITALIC BUTTON */}
+                        <button
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => executeFormat('italic')}
+                          className="p-1.5 rounded-lg hover:bg-stone-200/80 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
+                          title="Italic (Ctrl+I)"
+                          aria-label="Italic"
+                        >
+                          <Italic className="w-3.5 h-3.5" />
+                        </button>
 
-                            {/* Category Switcher Tabs */}
-                            <div className="flex items-center gap-1 pb-2 border-b border-editorial-borderLight dark:border-editorial-borderDark overflow-x-auto no-scrollbar">
-                              {EMOJI_CATEGORIES.map((cat) => (
-                                <button
-                                  key={cat.id}
-                                  type="button"
-                                  onClick={() => {
-                                    setSelectedEmojiCategory(cat.id);
-                                    setEmojiSearch('');
-                                  }}
-                                  className={`px-2 py-1 rounded-lg text-xs flex items-center gap-1 whitespace-nowrap transition-colors ${
-                                    selectedEmojiCategory === cat.id && !emojiSearch
-                                      ? 'bg-brand text-stone-900 font-bold'
-                                      : 'text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'
-                                  }`}
-                                >
-                                  <span>{cat.icon}</span>
-                                  <span className="text-[10px] hidden sm:inline">{cat.name.split(' ')[0]}</span>
-                                </button>
-                              ))}
-                            </div>
+                        {/* UNDERLINE BUTTON */}
+                        <button
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => executeFormat('underline')}
+                          className="p-1.5 rounded-lg hover:bg-stone-200/80 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
+                          title="Underline (Ctrl+U)"
+                          aria-label="Underline"
+                        >
+                          <Underline className="w-3.5 h-3.5" />
+                        </button>
 
-                            {/* Emoji Grid */}
-                            <div className="grid grid-cols-7 sm:grid-cols-8 gap-1 pt-2 max-h-48 overflow-y-auto custom-scrollbar">
-                              {activeCategoryEmojis.length === 0 ? (
-                                <div className="col-span-full py-4 text-center text-xs text-stone-400">
-                                  No emojis found
-                                </div>
-                              ) : (
-                                activeCategoryEmojis.map((em, idx) => (
-                                  <button
-                                    key={`${em}-${idx}`}
-                                    type="button"
-                                    onClick={() => handleInsertEmoji(em)}
-                                    className="w-8 h-8 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 hover:scale-125 transition-transform flex items-center justify-center text-base sm:text-lg cursor-pointer"
-                                    title={em}
-                                  >
-                                    {em}
-                                  </button>
-                                ))
-                              )}
-                            </div>
-                          </div>
-                        )}
+                        {/* HEADING BUTTON */}
+                        <button
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => executeFormat('formatBlock', '<h3>')}
+                          className="p-1.5 rounded-lg hover:bg-stone-200/80 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
+                          title="Heading"
+                          aria-label="Heading"
+                        >
+                          <Heading className="w-3.5 h-3.5" />
+                        </button>
+
+                        {/* QUOTE BUTTON */}
+                        <button
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => executeFormat('formatBlock', '<blockquote>')}
+                          className="p-1.5 rounded-lg hover:bg-stone-200/80 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
+                          title="Quote Block"
+                          aria-label="Quote Block"
+                        >
+                          <Quote className="w-3.5 h-3.5" />
+                        </button>
+
+                        {/* LIST BUTTON */}
+                        <button
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => executeFormat('insertUnorderedList')}
+                          className="p-1.5 rounded-lg hover:bg-stone-200/80 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
+                          title="Bullet List"
+                          aria-label="Bullet List"
+                        >
+                          <List className="w-3.5 h-3.5" />
+                        </button>
                       </div>
 
-                      <div className="h-4 w-[1px] bg-stone-300 dark:bg-stone-700 mx-1" />
-
-                      {/* SIZE DOWN / SIZE UP CONTROLS */}
-                      <div className="flex items-center gap-1 bg-stone-200/50 dark:bg-stone-800/50 rounded-lg p-0.5">
+                      {/* Cluster 2: FONT SIZE CONTROLS (Size Down & Size Up) - PROMINENT, HIGH CONTRAST & ALWAYS VISIBLE ON MOBILE */}
+                      <div className="flex items-center rounded-xl border border-stone-300 dark:border-stone-600 bg-editorial-lightSurface dark:bg-editorial-darkSurface shadow-subtle p-0.5">
                         <button
                           type="button"
                           onMouseDown={(e) => e.preventDefault()}
                           onClick={handleSizeDown}
-                          className="px-1.5 py-0.5 rounded text-[11px] font-bold text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors cursor-pointer"
-                          title="Decrease Text Size"
+                          className="h-7 px-2 rounded-lg text-xs font-bold text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-brand transition-colors cursor-pointer active:scale-95 flex items-center justify-center gap-0.5"
+                          title="Decrease Font Size (A⁻)"
+                          aria-label="Decrease Font Size"
                         >
-                          A⁻
+                          <span className="font-serif font-bold text-sm">A</span>
+                          <span className="text-[10px] font-bold">−</span>
                         </button>
-                        <span className="text-[10px] font-mono font-medium text-stone-500 px-1">
+                        
+                        <span className="h-5 px-1.5 min-w-[34px] flex items-center justify-center text-[11px] font-mono font-bold text-stone-800 dark:text-stone-100 bg-stone-100 dark:bg-stone-800/80 rounded border border-stone-200 dark:border-stone-700 select-none">
                           {fontSizePx}px
                         </span>
+                        
                         <button
                           type="button"
                           onMouseDown={(e) => e.preventDefault()}
                           onClick={handleSizeUp}
-                          className="px-1.5 py-0.5 rounded text-[11px] font-bold text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors cursor-pointer"
-                          title="Increase Text Size (Size Up)"
+                          className="h-7 px-2 rounded-lg text-xs font-bold text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-brand transition-colors cursor-pointer active:scale-95 flex items-center justify-center gap-0.5"
+                          title="Increase Font Size (A⁺)"
+                          aria-label="Increase Font Size"
                         >
-                          A⁺
+                          <span className="font-serif font-bold text-base">A</span>
+                          <span className="text-[10px] font-bold">+</span>
                         </button>
                       </div>
+
+                      {/* Cluster 3: SELECT ALL, COPY & EMOJI TOOLS */}
+                      <div className="flex items-center gap-0.5 bg-stone-200/60 dark:bg-stone-800/60 rounded-xl p-0.5 border border-stone-200/80 dark:border-stone-700/80">
+                        {/* SELECT ALL TEXT OPTION */}
+                        <button
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={handleSelectAll}
+                          className="p-1.5 rounded-lg hover:bg-stone-200/80 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 transition-colors flex items-center gap-1 cursor-pointer"
+                          title="Select All Text in Entry (Ctrl+A)"
+                          aria-label="Select All Text"
+                        >
+                          <svg className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                          </svg>
+                          <span className="text-[11px] font-semibold hidden sm:inline">Select All</span>
+                        </button>
+
+                        {/* COPY SELECTED TEXT OR ENTIRE NOTE */}
+                        <button
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={handleCopySelection}
+                          className={`p-1.5 rounded-lg transition-colors flex items-center gap-1 cursor-pointer ${
+                            copiedFeedback
+                              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold'
+                              : 'hover:bg-stone-200/80 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200'
+                          }`}
+                          title="Copy Selected Text (or Entire Page)"
+                          aria-label="Copy Text"
+                        >
+                          {copiedFeedback ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                              <span className="text-[11px] font-semibold">Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" />
+                              <span className="text-[11px] font-semibold hidden md:inline">Copy</span>
+                            </>
+                          )}
+                        </button>
+
+                        {/* EMOJI PICKER POPOVER TRIGGER */}
+                        <div className="relative" ref={emojiPickerRef}>
+                          <button
+                            type="button"
+                            onClick={() => setEmojiPickerOpen(!emojiPickerOpen)}
+                            className={`p-1.5 rounded-lg transition-colors flex items-center gap-1 cursor-pointer ${
+                              emojiPickerOpen
+                                ? 'bg-brand text-stone-900 font-bold'
+                                : 'hover:bg-stone-200/80 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200'
+                            }`}
+                            title="Insert Emojis & Aesthetic Symbols"
+                            aria-label="Insert Emoji"
+                          >
+                            <Smile className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" />
+                            <span className="text-[11px] font-semibold hidden sm:inline">Emoji</span>
+                          </button>
+
+                          {/* EMOJI FLOATING PALETTE */}
+                          {emojiPickerOpen && (
+                            <div className="absolute left-0 mt-2 w-72 sm:w-80 rounded-2xl bg-editorial-lightSurface dark:bg-editorial-darkSurface border border-stone-200 dark:border-stone-800 shadow-elevation p-3 z-40 animate-in fade-in duration-150">
+                              
+                              {/* Emoji Search Input */}
+                              <div className="relative mb-2">
+                                <Search className="w-3 h-3 absolute left-2.5 top-2.5 text-stone-400" />
+                                <input
+                                  type="text"
+                                  placeholder="Search emojis..."
+                                  value={emojiSearch}
+                                  onChange={(e) => setEmojiSearch(e.target.value)}
+                                  className="w-full pl-7 pr-3 py-1.5 text-xs rounded-xl border border-editorial-borderLight dark:border-editorial-borderDark bg-stone-50 dark:bg-stone-900 text-editorial-ink dark:text-stone-200 focus:outline-none focus:ring-1 focus:ring-brand"
+                                />
+                                {emojiSearch && (
+                                  <button onClick={() => setEmojiSearch('')} className="absolute right-2 top-2 text-stone-400">
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* Category Switcher Tabs */}
+                              <div className="flex items-center gap-1 pb-2 border-b border-editorial-borderLight dark:border-editorial-borderDark overflow-x-auto no-scrollbar">
+                                {EMOJI_CATEGORIES.map((cat) => (
+                                  <button
+                                    key={cat.id}
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedEmojiCategory(cat.id);
+                                      setEmojiSearch('');
+                                    }}
+                                    className={`px-2 py-1 rounded-lg text-xs flex items-center gap-1 whitespace-nowrap transition-colors ${
+                                      selectedEmojiCategory === cat.id && !emojiSearch
+                                        ? 'bg-brand text-stone-900 font-bold'
+                                        : 'text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'
+                                    }`}
+                                  >
+                                    <span>{cat.icon}</span>
+                                    <span className="text-[10px] hidden sm:inline">{cat.name.split(' ')[0]}</span>
+                                  </button>
+                                ))}
+                              </div>
+
+                              {/* Emoji Grid */}
+                              <div className="grid grid-cols-7 sm:grid-cols-8 gap-1 pt-2 max-h-48 overflow-y-auto custom-scrollbar">
+                                {activeCategoryEmojis.length === 0 ? (
+                                  <div className="col-span-full py-4 text-center text-xs text-stone-400">
+                                    No emojis found
+                                  </div>
+                                ) : (
+                                  activeCategoryEmojis.map((em, idx) => (
+                                    <button
+                                      key={`${em}-${idx}`}
+                                      type="button"
+                                      onClick={() => handleInsertEmoji(em)}
+                                      className="w-8 h-8 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 hover:scale-125 transition-transform flex items-center justify-center text-base sm:text-lg cursor-pointer"
+                                      title={em}
+                                    >
+                                      {em}
+                                    </button>
+                                  ))
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
                     </div>
 
               {/* Right Group: Paper Style, Mood Pill & Inspire Me */}
