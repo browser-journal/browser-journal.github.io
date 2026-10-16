@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- English / Main Root URL -->
+  <url>
+    <loc>https://browser-journal.github.io/</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://browser-journal.github.io/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://browser-journal.github.io/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://browser-journal.github.io/es" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://browser-journal.github.io/pt" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://browser-journal.github.io/de" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://browser-journal.github.io/fr" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://browser-journal.github.io/ja" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://browser-journal.github.io/zh" />
+  </url>
+
+  <!-- Spanish (es) -->
+  <url>
+    <loc>https://browser-journal.github.io/es</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://browser-journal.github.io/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://browser-journal.github.io/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://browser-journal.github.io/es" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://browser-journal.github.io/pt" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://browser-journal.github.io/de" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://browser-journal.github.io/fr" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://browser-journal.github.io/ja" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://browser-journal.github.io/zh" />
+  </url>
+
+  <!-- Portuguese (pt) -->
+  <url>
+    <loc>https://browser-journal.github.io/pt</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://browser-journal.github.io/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://browser-journal.github.io/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://browser-journal.github.io/es" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://browser-journal.github.io/pt" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://browser-journal.github.io/de" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://browser-journal.github.io/fr" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://browser-journal.github.io/ja" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://browser-journal.github.io/zh" />
+  </url>
+
+  <!-- German (de) -->
+  <url>
+    <loc>https://browser-journal.github.io/de</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://browser-journal.github.io/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://browser-journal.github.io/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://browser-journal.github.io/es" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://browser-journal.github.io/pt" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://browser-journal.github.io/de" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://browser-journal.github.io/fr" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://browser-journal.github.io/ja" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://browser-journal.github.io/zh" />
+  </url>
+
+  <!-- French (fr) -->
+  <url>
+    <loc>https://browser-journal.github.io/fr</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://browser-journal.github.io/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://browser-journal.github.io/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://browser-journal.github.io/es" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://browser-journal.github.io/pt" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://browser-journal.github.io/de" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://browser-journal.github.io/fr" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://browser-journal.github.io/ja" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://browser-journal.github.io/zh" />
+  </url>
+
+  <!-- Japanese (ja) -->
+  <url>
+    <loc>https://browser-journal.github.io/ja</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://browser-journal.github.io/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://browser-journal.github.io/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://browser-journal.github.io/es" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://browser-journal.github.io/pt" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://browser-journal.github.io/de" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://browser-journal.github.io/fr" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://browser-journal.github.io/ja" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://browser-journal.github.io/zh" />
+  </url>
+
+  <!-- Chinese (zh) -->
+  <url>
+    <loc>https://browser-journal.github.io/zh</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://browser-journal.github.io/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://browser-journal.github.io/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://browser-journal.github.io/es" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://browser-journal.github.io/pt" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://browser-journal.github.io/de" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://browser-journal.github.io/fr" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://browser-journal.github.io/ja" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://browser-journal.github.io/zh" />
+  </url>
+</urlset>

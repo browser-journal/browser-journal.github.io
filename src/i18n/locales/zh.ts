@@ -2,13 +2,15 @@ import type { LocalizedDictionary } from '../../types/journal';
 
 export const zh: LocalizedDictionary = {
   meta: {
-    title: 'DailyDiary | 免费 100% 隐私零服务器离线个人日记本',
-    description: '极简主义纯客户端日常日记与心境反思 Web 应用。零服务器、浏览器本地保存，支持原生 AES-GCM 密码锁与完整数据导出。',
-    keywords: '免费在线日记本, 隐私日记, 浏览器笔记本, 零服务器日记, 本地加密日记, 离线日记应用',
-    url: 'https://daily-diary.github.io/zh',
+    title: 'Browser Journal — 免费 100% 隐私零服务器离线浏览器日记本',
+    description: 'Browser Journal 是一款极简纯客户端浏览器在线日记本应用。零服务器通信、免登录、支持 AES-256 密码锁加密、精美装订封面与完整 PDF 书本导出。',
+    keywords: 'browser journal, 免费在线日记本, 隐私日记, 浏览器笔记本, 零服务器日记, 本地加密日记, 离线日记应用, 带封面日记',
+    url: 'https://browser-journal.github.io/zh',
+    h1Title: 'Browser Journal — 免费 100% 隐私零服务器离线浏览器日记本',
+    h1Subtitle: '无云端上传，零第三方跟踪。日记安全保存在浏览器本地存储中，配备 PIN 码强加密与精美书本式封面。',
   },
   nav: {
-    brand: 'DailyDiary',
+    brand: 'Browser Journal',
     tagline: '静谧私密的心灵栖息地',
     trustBadge: '100% 本地隐私安全',
     lightMode: '浅色模式',

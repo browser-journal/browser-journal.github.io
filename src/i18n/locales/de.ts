@@ -2,13 +2,15 @@ import type { LocalizedDictionary } from '../../types/journal';
 
 export const de: LocalizedDictionary = {
   meta: {
-    title: 'DailyDiary | 100% Privates Online-Tagebuch ohne Server',
-    description: 'Eine minimalistische Web-App für tägliches Tagebuchschreiben und Achtsamkeit. 100% lokal im Browser mit optionaler AES-GCM PIN-Verschlüsselung.',
-    keywords: 'kostenloses online tagebuch, privates tagebuch online, browser notizbuch tagebuch, tagebuch ohne server, lokales verschlüsseltes tagebuch',
-    url: 'https://daily-diary.github.io/de',
+    title: 'Browser Journal — 100% Privates Online-Tagebuch im Browser',
+    description: 'Browser Journal ist eine minimalistische Web-App für persönliches Tagebuchschreiben im Browser. 100% privat, ohne Server, ohne Registrierung, mit AES-256 PIN-Sperre und PDF-Export.',
+    keywords: 'browser journal, kostenloses online tagebuch, privates tagebuch online, browser notizbuch tagebuch, tagebuch ohne server, lokales verschlüsseltes tagebuch, tagebuch mit buchcover',
+    url: 'https://browser-journal.github.io/de',
+    h1Title: 'Browser Journal — 100% Privates Online-Tagebuch im Browser',
+    h1Subtitle: 'Ihr privates Tagebuch ohne Serverkommunikation. Gespeichert direkt im Browser mit PIN-Schutz und anpassbaren Buchumschlägen.',
   },
   nav: {
-    brand: 'DailyDiary',
+    brand: 'Browser Journal',
     tagline: 'Privater Rückzugsort für Gedanken',
     trustBadge: '100% Privat & Lokal',
     lightMode: 'Heller Modus',

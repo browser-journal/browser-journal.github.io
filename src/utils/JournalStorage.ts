@@ -362,7 +362,7 @@ export function exportEntryToMarkdown(entry: JournalEntry): void {
   const bodyMarkdown = htmlToMarkdown(entry.content);
 
   const md = `# ${entry.title || 'Journal Entry'}\n**Date:** ${entry.date}${moodStr}${tagsStr}\n${promptStr}\n---\n\n${bodyMarkdown}`;
-  const filename = `daily-diary-${entry.date}-${entry.title ? entry.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'entry'}.md`;
+  const filename = `browser-journal-${entry.date}-${entry.title ? entry.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'entry'}.md`;
   downloadFile(md, filename, 'text/markdown;charset=utf-8');
 }
 
@@ -372,7 +372,7 @@ export function exportEntryToMarkdown(entry: JournalEntry): void {
 export function exportEntryToPlainText(entry: JournalEntry): void {
   const bodyTxt = htmlToPlainText(entry.content);
   const txt = `${entry.title || 'Journal Entry'}\nDate: ${entry.date}\nMood: ${entry.mood || 'None'}\n\n${bodyTxt}`;
-  const filename = `daily-diary-${entry.date}.txt`;
+  const filename = `browser-journal-${entry.date}.txt`;
   downloadFile(txt, filename, 'text/plain;charset=utf-8');
 }
 
@@ -381,7 +381,7 @@ export function exportEntryToPlainText(entry: JournalEntry): void {
  */
 export function backupAllDataToJson(entries: JournalEntry[]): void {
   const backupObject = {
-    app: 'DailyDiary',
+    app: 'BrowserJournal',
     version: '1.0.0',
     exportTimestamp: Date.now(),
     exportDateISO: new Date().toISOString(),
@@ -389,7 +389,7 @@ export function backupAllDataToJson(entries: JournalEntry[]): void {
     entries: entries,
   };
   const jsonStr = JSON.stringify(backupObject, null, 2);
-  const filename = `daily-diary-backup-${getLocalTodayStr()}.json`;
+  const filename = `browser-journal-backup-${getLocalTodayStr()}.json`;
   downloadFile(jsonStr, filename, 'application/json;charset=utf-8');
 }
 

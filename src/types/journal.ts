@@ -60,6 +60,8 @@ export interface LocalizedDictionary {
     description: string;
     keywords: string;
     url: string;
+    h1Title?: string;
+    h1Subtitle?: string;
   };
   nav: {
     brand: string;

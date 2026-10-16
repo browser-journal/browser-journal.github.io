@@ -2,13 +2,15 @@ import type { LocalizedDictionary } from '../../types/journal';
 
 export const fr: LocalizedDictionary = {
   meta: {
-    title: 'DailyDiary | Journal Intime 100% Privé sans Serveur',
-    description: 'Une application web minimaliste pour la tenue de votre journal quotidien et la pleine conscience. 100% local avec chiffrement PIN AES-GCM.',
-    keywords: 'journal intime en ligne gratuit, journal personnel privé, bloc-notes journal navigateur, journal sans serveur, journal chiffré local',
-    url: 'https://daily-diary.github.io/fr',
+    title: 'Browser Journal — Journal Intime en Ligne 100% Privé',
+    description: 'Browser Journal est une application web minimaliste de journal intime exécutée directement dans votre navigateur. 100% privé, sans serveur, sans inscription, avec verrouillage PIN AES-256 et export PDF.',
+    keywords: 'browser journal, journal intime en ligne gratuit, journal personnel privé navigateur, bloc-notes journal navigateur, journal sans serveur, journal chiffré local, journal avec couverture',
+    url: 'https://browser-journal.github.io/fr',
+    h1Title: 'Browser Journal — Journal Intime en Ligne 100% Privé',
+    h1Subtitle: 'Votre sanctuaire d’écriture personnel, conservé exclusivement dans la mémoire de votre navigateur avec chiffrement PIN AES-256 et couvertures esthétiques.',
   },
   nav: {
-    brand: 'DailyDiary',
+    brand: 'Browser Journal',
     tagline: 'Sanctuaire de Réflexion Privée',
     trustBadge: '100% Privé & Local',
     lightMode: 'Mode Clair',

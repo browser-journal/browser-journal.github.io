@@ -4,7 +4,7 @@ import tailwind from '@astrojs/tailwind';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://daily-diary.github.io',
+  site: 'https://browser-journal.github.io',
   trailingSlash: 'never',
   integrations: [
     react(),

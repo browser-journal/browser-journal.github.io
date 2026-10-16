@@ -1,8 +1,8 @@
-# DailyDiary | Free 100% Private Zero-Server Online Journal
+# Browser Journal | Free 100% Private Zero-Server Online Diary
 
-[![GitHub Pages Deployment](https://img.shields.io/badge/Deploy-GitHub%20Pages-success?style=flat-square&logo=github)](https://daily-diary.github.io)
-[![Privacy](https://img.shields.io/badge/Privacy-100%25%20Zero--Server-emerald?style=flat-square&logo=shield)](https://daily-diary.github.io)
-[![Cryptography](https://img.shields.io/badge/Security-AES--GCM%20256--bit-blue?style=flat-square&logo=keycdn)](https://daily-diary.github.io)
+[![GitHub Pages Deployment](https://img.shields.io/badge/Deploy-GitHub%20Pages-success?style=flat-square&logo=github)](https://browser-journal.github.io)
+[![Privacy](https://img.shields.io/badge/Privacy-100%25%20Zero--Server-emerald?style=flat-square&logo=shield)](https://browser-journal.github.io)
+[![Cryptography](https://img.shields.io/badge/Security-AES--GCM%20256--bit-blue?style=flat-square&logo=keycdn)](https://browser-journal.github.io)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support-amber?style=flat-square&logo=buymeacoffee)](https://buymeacoffee.com/kisharadilz)
 
 > An ultra-minimal, 100% client-side daily journaling and mindset reflection web application built with **Astro** and **React**. All entries, mood logs, and daily streaks are stored strictly in the user's browser via LocalStorage with optional Web Crypto API (`AES-GCM` 256-bit + `PBKDF2`) PIN lock. Zero servers, zero cloud uploads, and complete privacy.
@@ -18,8 +18,13 @@
 - 🌿 **1-Tap Daily Mood & Mindset Prompts**: Log your daily emotional energy (Calm, Focused, Grateful, Happy, Tired, Energized, Reflective, Inspired) and receive curated psychological reflection prompts to soothe anxiety.
 - 🔥 **30-Day Consistency Streak Heatmap**: Real-time visual progress dots, current streak tracking, personal best streak records, and celebratory confetti milestones.
 - 📦 **Universal Data Ownership**:
-  - Export single notes as Markdown (`.md`), plain text (`.txt`), or print-ready PDF view.
-  - Complete JSON backup and instant file restoration.
+  - Full journal book with cover and table of contents exported directly to **PDF**!
+  - Single-click export of any entry to clean **Markdown (`.md`)** with YAML frontmatter.
+  - Plain-text (`.txt`) export and instant browser-native printing.
+  - Complete, unencrypted or encrypted **JSON backup vault** for seamless zero-cloud migration between devices.
+
+---
+
 - 🌐 **7-Language i18n Architecture**:
   - English (`en`, US)
   - Español (`es`, ES)
@@ -55,10 +60,10 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/daily-diary/daily-diary.github.io.git
+git clone https://github.com/browser-journal/browser-journal.github.io.git
 
 # Navigate to project directory
-cd daily-diary.github.io
+cd browser-journal.github.io
 
 # Install dependencies
 npm install

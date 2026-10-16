@@ -2,13 +2,15 @@ import type { LocalizedDictionary } from '../../types/journal';
 
 export const ja: LocalizedDictionary = {
   meta: {
-    title: 'DailyDiary | サーバー不要・完全プライベートな無料オンライン日記',
-    description: '完全クライアント完結の極小・安心の日記＆マインドセット内省アプリ。クラウド送信なし、ブラウザ内保存とAES-GCM暗号化PINロック対応。',
-    keywords: '無料オンライン日記, 完全非公開日記, ブラウザメモ日記, サーバーなし日記アプリ, クライアント暗号化日記, プライベートダイアリー',
-    url: 'https://daily-diary.github.io/ja',
+    title: 'Browser Journal — 100%プライベート・サーバー不要のブラウザ日記帳',
+    description: 'Browser Journalは、ブラウザだけで完結する完全非公開の無料オンライン日記帳アプリです。サーバー送信ゼロ、ログイン不要、AES-256暗号化PINロック、美しい表紙とPDF出力に対応。',
+    keywords: 'browser journal, 無料オンライン日記, 完全非公開日記, ブラウザ日記帳, サーバーなし日記アプリ, クライアント暗号化日記, プライベートダイアリー, 表紙付き日記',
+    url: 'https://browser-journal.github.io/ja',
+    h1Title: 'Browser Journal — 100%プライベート・サーバー不要のブラウザ日記帳',
+    h1Subtitle: '外部サーバー通信ゼロ。ブラウザ内にのみ安全に保存され、PINロックと美しい装丁を備えたあなただけのプライベート日記帳。',
   },
   nav: {
-    brand: 'DailyDiary',
+    brand: 'Browser Journal',
     tagline: '静寂と内省のプライベート空間',
     trustBadge: '100%完全ローカル・非公開',
     lightMode: 'ライトモード',

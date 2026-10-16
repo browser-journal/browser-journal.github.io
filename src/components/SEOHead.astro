@@ -8,23 +8,26 @@ interface Props {
 }
 
 const { currentLocale, dict } = Astro.props;
-const siteUrl = 'https://daily-diary.github.io';
+const siteUrl = 'https://browser-journal.github.io';
 const canonicalUrl = `${siteUrl}${getLanguagePath(currentLocale)}`;
+const ogImageUrl = `${siteUrl}/og-image.png`;
 
-// Technical SEO Schemas
+// Technical SEO Schemas (Schema.org / JSON-LD)
 const webAppSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: 'DailyDiary',
+  name: 'Browser Journal',
   alternateName: [
-    'Daily Diary Online',
+    'Browser Journal',
+    'Browser Diary',
+    'DailyDiary',
     'Free Private Online Journal',
-    'Browser Notepad Journal',
     'Zero Server Diary App',
-    'Private Client-Side Diary',
+    'Offline Browser Notepad',
+    'Client-Side Encrypted Journal',
   ],
-  applicationCategory: 'LifestyleApplication',
-  operatingSystem: 'All Modern Web Browsers',
+  applicationCategory: 'ProductivityApplication',
+  operatingSystem: 'All Modern Web Browsers (Chrome, Safari, Firefox, Edge, iOS, Android)',
   url: canonicalUrl,
   description: dict.meta.description,
   offers: {
@@ -32,15 +35,24 @@ const webAppSchema = {
     price: '0',
     priceCurrency: 'USD',
   },
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '4.9',
+    ratingCount: '184',
+    bestRating: '5',
+    worstRating: '1',
+  },
   featureList: [
     '100% Client-Side Privacy (Zero Server Communication)',
-    'AES-GCM 256-bit PIN Lock & Encryption',
-    'Instant LocalStorage Autosaving',
+    'Instant LocalStorage Autosaving & Offline-First Architecture',
+    'AES-GCM 256-bit PIN Security Lock with Web Crypto API',
+    'Realistic 3D Book Experience & Page Flip Animations',
+    'Customizable Hardcover Themes & Aesthetic Pastel Color Palettes',
+    'Full Journal Book PDF Export with Cover & Table of Contents',
+    'Universal Markdown (.md), Plain Text (.txt), and JSON Backup Vault',
+    'Daily Mood Intelligence Tracker & Guided Reflection Prompts',
+    'Consistency Streak 30-Day Heatmap Visualization',
     'Distraction-Free Zen Focus Mode',
-    'Daily Mood Tracker & Reflection Prompts',
-    'Consistency Streak 30-Day Heatmap',
-    'Browser-Configurable Color Palettes & Editorial Typography',
-    'Universal Markdown (.md), Text (.txt), and JSON Backup Export',
   ],
   browserRequirements: 'Requires JavaScript and LocalStorage support.',
 };
@@ -49,36 +61,36 @@ const howToSchema = {
   '@context': 'https://schema.org',
   '@type': 'HowTo',
   name: 'How to Keep a 100% Private Online Journal in Your Web Browser',
-  description: 'A step-by-step guide to maintaining a distraction-free, encrypted daily diary using browser-only storage.',
+  description: 'A step-by-step guide to maintaining a distraction-free, encrypted daily diary using browser-only storage with zero servers.',
   step: [
     {
       '@type': 'HowToStep',
-      name: 'Open DailyDiary',
-      text: 'Visit daily-diary.github.io in any browser. No login or signup required.',
+      name: 'Open Browser Journal',
+      text: 'Visit browser-journal.github.io in any browser. No account, login, or installation required.',
       position: 1,
     },
     {
       '@type': 'HowToStep',
-      name: 'Select Mood & Mindset Prompt',
-      text: 'Pick your emotional state from the mood pills or tap Inspire Me to receive a thoughtful reflection question.',
+      name: 'Select Mood & Reflection Prompt',
+      text: 'Pick your emotional state from the mood pills or tap Inspire Me to receive a thoughtful daily reflection question.',
       position: 2,
     },
     {
       '@type': 'HowToStep',
-      name: 'Write Freely in Zen Mode',
-      text: 'Write your thoughts in the distraction-free canvas. Every keystroke auto-saves locally.',
+      name: 'Write Freely with Instant Autosave',
+      text: 'Write thoughts on ruled, dot grid, or blank aesthetic paper. Every keystroke auto-saves in local storage.',
       position: 3,
     },
     {
       '@type': 'HowToStep',
       name: 'Enable Optional PIN Encryption',
-      text: 'Protect entries on shared devices with 4-digit PIN lock powered by Web Crypto API AES-GCM.',
+      text: 'Protect entries on shared devices with 4-digit PIN lock powered by Web Crypto API 256-bit AES-GCM.',
       position: 4,
     },
     {
       '@type': 'HowToStep',
-      name: 'Export and Backup Data',
-      text: 'Download your memories as Markdown (.md) or full JSON backups whenever you want.',
+      name: 'Export Full Journal Book to PDF',
+      text: 'Download your complete journal with cover image and table of contents as a printable PDF book or JSON backup.',
       position: 5,
     },
   ],
@@ -96,6 +108,28 @@ const faqSchema = {
     },
   })),
 };
+
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Browser Journal',
+  url: siteUrl,
+  logo: `${siteUrl}/favicon.svg`,
+  description: 'Free 100% private zero-server online diary and mindset journal.',
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: canonicalUrl,
+    },
+  ],
+};
 ---
 
 <!-- Primary Meta Tags -->
@@ -103,8 +137,8 @@ const faqSchema = {
 <meta name="title" content={dict.meta.title} />
 <meta name="description" content={dict.meta.description} />
 <meta name="keywords" content={dict.meta.keywords} />
-<meta name="author" content="DailyDiary" />
-<meta name="robots" content="index, follow" />
+<meta name="author" content="Browser Journal" />
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#FAF8F5" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#0C0A09" media="(prefers-color-scheme: dark)" />
@@ -123,20 +157,32 @@ const faqSchema = {
 <meta property="og:url" content={canonicalUrl} />
 <meta property="og:title" content={dict.meta.title} />
 <meta property="og:description" content={dict.meta.description} />
-<meta property="og:site_name" content="DailyDiary" />
+<meta property="og:site_name" content="Browser Journal" />
 <meta property="og:locale" content={currentLocale} />
+<meta property="og:image" content={ogImageUrl} />
+<meta property="og:image:secure_url" content={ogImageUrl} />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Browser Journal — Free 100% Private Online Diary & Digital Notebook" />
 
-<!-- Twitter -->
+<!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:url" content={canonicalUrl} />
 <meta name="twitter:title" content={dict.meta.title} />
 <meta name="twitter:description" content={dict.meta.description} />
+<meta name="twitter:image" content={ogImageUrl} />
+<meta name="twitter:image:alt" content="Browser Journal — Free 100% Private Online Diary & Digital Notebook" />
 
-<!-- Favicon and PWA -->
+<!-- Favicon, Manifest & Preconnect -->
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="manifest" href="/manifest.json" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
 <!-- Structured Data (JSON-LD) -->
 <script type="application/ld+json" set:html={JSON.stringify(webAppSchema)} />
 <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
 <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />

@@ -2,13 +2,15 @@ import type { LocalizedDictionary } from '../../types/journal';
 
 export const pt: LocalizedDictionary = {
   meta: {
-    title: 'DailyDiary | Diário Pessoal 100% Privado sem Servidores',
-    description: 'Um aplicativo web minimalista para diário e reflexão pessoal. Armazenamento 100% no navegador com criptografia PIN AES-GCM opcional.',
-    keywords: 'diário pessoal online grátis, diário íntimo privado, bloco de notas diário navegador, diário sem servidores, diário criptografado',
-    url: 'https://daily-diary.github.io/pt',
+    title: 'Browser Journal — Diário Online 100% Privado sem Servidores',
+    description: 'Browser Journal é um aplicativo web minimalista de diário pessoal diretamente no navegador. 100% privado, sem servidores, com bloqueio PIN AES-256 e exportação em PDF.',
+    keywords: 'browser journal, diário pessoal online grátis, diário íntimo privado navegador, bloco de notas diário navegador, diário sem servidores, diário criptografado, diário com capa',
+    url: 'https://browser-journal.github.io/pt',
+    h1Title: 'Browser Journal — Diário Online 100% Privado sem Servidores',
+    h1Subtitle: 'Seu diário pessoal seguro e focado, salvo exclusivamente no navegador com criptografia PIN AES-256 e capas personalizadas.',
   },
   nav: {
-    brand: 'DailyDiary',
+    brand: 'Browser Journal',
     tagline: 'Santuário de Reflexão Privada',
     trustBadge: '100% Privado e Local',
     lightMode: 'Modo Claro',

@@ -1,11 +1,11 @@
 {
-  "name": "DailyDiary | Free 100% Private Zero-Server Online Journal",
-  "short_name": "DailyDiary",
-  "description": "An ultra-minimal, 100% client-side daily journaling and mindset reflection web app. Stored strictly in browser with optional AES-GCM PIN lock.",
+  "name": "Browser Journal — Free 100% Private Online Diary",
+  "short_name": "Browser Journal",
+  "description": "An ultra-minimal, 100% client-side daily journaling and mindset reflection web app. Zero servers, browser-only storage with optional AES-GCM PIN encryption.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FAF8F5",
-  "theme_color": "#0F766E",
+  "theme_color": "#95E1D3",
   "icons": [
     {
       "src": "/favicon.svg",

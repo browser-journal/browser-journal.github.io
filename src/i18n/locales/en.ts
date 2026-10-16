@@ -2,13 +2,15 @@ import type { LocalizedDictionary } from '../../types/journal';
 
 export const en: LocalizedDictionary = {
   meta: {
-    title: 'DailyDiary | Free 100% Private Zero-Server Online Journal',
-    description: 'An ultra-minimal, 100% client-side daily journaling and mindset reflection web app. Zero servers, browser-only storage with optional AES-GCM PIN encryption.',
-    keywords: 'free online journal, private daily diary online, browser notepad journal, zero server diary app, client-side encrypted journal, offline journal web app',
-    url: 'https://daily-diary.github.io',
+    title: 'Browser Journal — Free 100% Private Online Diary & Notebook',
+    description: 'Browser Journal is an ultra-minimal, 100% client-side daily diary running entirely in your browser. Zero servers, zero logins, AES-256 PIN lock, book themes & PDF export.',
+    keywords: 'browser journal, browser diary, free online journal, private online diary, zero server diary, offline journal web app, client-side encrypted journal, aesthetic journal with cover, online diary no sign up, private browser notepad',
+    url: 'https://browser-journal.github.io',
+    h1Title: 'Browser Journal — Free 100% Private Online Diary & Digital Notebook',
+    h1Subtitle: 'A distraction-free, zero-server personal diary stored exclusively in your browser. Complete client-side privacy, AES-256 PIN lock, aesthetic book covers & instant PDF export.',
   },
   nav: {
-    brand: 'DailyDiary',
+    brand: 'Browser Journal',
     tagline: 'Private Mindset Sanctuary',
     trustBadge: '100% Private & Local',
     lightMode: 'Switch to Light Mode',
