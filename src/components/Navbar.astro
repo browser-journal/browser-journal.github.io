@@ -14,20 +14,20 @@ const currentLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === currentLocale)
 <header class="sticky top-0 z-30 w-full border-b border-editorial-borderLight/80 dark:border-editorial-borderDark/80 bg-editorial-lightBg/95 dark:bg-editorial-darkBg/95 backdrop-blur-md transition-colors duration-200 no-print">
   <div class="max-w-5xl mx-auto px-3 sm:px-4 h-14 flex items-center justify-between gap-2 sm:gap-3">
     
-    <!-- Left: Brand and Entries Drawer Toggle -->
+    <!-- Left: Brand (and Desktop Entries Drawer Toggle) -->
     <div class="flex items-center gap-2 sm:gap-3">
-      <!-- Entries Drawer Button -->
+      <!-- Entries Drawer Button (Desktop Only: hidden on mobile & tab to keep strictly 1 toggle) -->
       <button
         type="button"
         id="toggle-sidebar-btn"
-        class="px-2.5 py-1.5 rounded-lg border border-editorial-borderLight dark:border-editorial-borderDark bg-editorial-lightSurface dark:bg-editorial-darkSurface text-stone-700 dark:text-stone-300 hover:border-brand hover:text-brand transition-all flex items-center gap-1.5 text-xs font-medium shadow-subtle cursor-pointer active:scale-95"
+        class="hidden lg:flex px-2.5 py-1.5 rounded-lg border border-editorial-borderLight dark:border-editorial-borderDark bg-editorial-lightSurface dark:bg-editorial-darkSurface text-stone-700 dark:text-stone-300 hover:border-brand hover:text-brand transition-all items-center gap-1.5 text-xs font-medium shadow-subtle cursor-pointer active:scale-95"
         title="Open Past Entries & Search"
         aria-label="Open Past Entries & Search"
       >
         <svg class="w-4 h-4 text-stone-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
         </svg>
-        <span class="hidden sm:inline font-medium">Entries</span>
+        <span class="font-medium">Entries</span>
       </button>
 
       <!-- Brand -->
@@ -109,7 +109,7 @@ const currentLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === currentLocale)
         title={dict.nav.backupRestore}
       >
         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.5V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
         </svg>
         <span>Export</span>
       </button>
@@ -196,30 +196,14 @@ const currentLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === currentLocale)
 
     </div>
 
-    <!-- Right: Mobile & Tablet Responsive Controls (lg:hidden) -->
-    <div class="flex lg:hidden items-center gap-1.5 sm:gap-2">
+    <!-- Right: Mobile & Tablet View - STRICTLY 1 SINGLE UNIFIED TOGGLE BUTTON (lg:hidden) -->
+    <div class="flex lg:hidden items-center">
       
-      <!-- Quick Dark Mode Toggle (1-Tap for mobile & tablet) -->
-      <button
-        type="button"
-        id="dark-mode-toggle-mobile"
-        class="p-2 rounded-xl border border-editorial-borderLight dark:border-editorial-borderDark bg-editorial-lightSurface dark:bg-editorial-darkSurface text-stone-600 dark:text-stone-300 hover:text-brand hover:border-brand transition-all flex items-center justify-center shadow-subtle cursor-pointer active:scale-95"
-        title="Toggle Light/Dark Theme"
-        aria-label="Toggle Light/Dark Theme"
-      >
-        <svg class="sun-icon hidden w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-        <svg class="moon-icon w-4 h-4 text-stone-600 dark:text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-        </svg>
-      </button>
-
-      <!-- RESPONSIVE MOBILE & TABLET TOGGLE BUTTON -->
+      <!-- THE SINGLE MOBILE & TABLET TOGGLE BUTTON -->
       <button
         type="button"
         id="mobile-menu-toggle-btn"
-        class="px-2.5 py-1.5 sm:px-3 rounded-xl border border-editorial-borderLight dark:border-editorial-borderDark bg-editorial-lightSurface dark:bg-editorial-darkSurface text-stone-700 dark:text-stone-200 hover:border-brand hover:text-brand transition-all flex items-center gap-1.5 text-xs font-semibold shadow-subtle cursor-pointer active:scale-95"
+        class="px-3 py-1.5 rounded-xl border border-editorial-borderLight dark:border-editorial-borderDark bg-editorial-lightSurface dark:bg-editorial-darkSurface text-stone-700 dark:text-stone-200 hover:border-brand hover:text-brand transition-all flex items-center gap-1.5 text-xs font-semibold shadow-subtle cursor-pointer active:scale-95"
         aria-label="Toggle navigation menu"
         aria-expanded="false"
         aria-controls="mobile-nav-menu"
@@ -248,20 +232,54 @@ const currentLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === currentLocale)
   >
     <div class="max-w-5xl mx-auto px-4 py-3.5 space-y-3.5">
       
-      <!-- Top Status & Privacy Line -->
+      <!-- Top Status & Theme Mode Switcher Line -->
       <div class="flex items-center justify-between pb-2 border-b border-editorial-borderLight dark:border-editorial-borderDark text-xs">
-        <span class="font-bold text-stone-700 dark:text-stone-200 flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5">
           <span class="w-2 h-2 rounded-full bg-[#95E1D3]"></span>
-          <span>Journal Tools & Settings</span>
-        </span>
-        <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#EAFFD0]/80 dark:bg-[#EAFFD0]/15 text-stone-800 dark:text-[#95E1D3] border border-[#95E1D3]/50">
-          100% Zero-Server Private
-        </span>
+          <span class="font-bold text-stone-700 dark:text-stone-200">Journal Menu</span>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#EAFFD0]/80 dark:bg-[#EAFFD0]/15 text-stone-800 dark:text-[#95E1D3] border border-[#95E1D3]/50">
+            100% Private
+          </span>
+        </div>
+
+        <!-- 1-Tap Light/Dark Mode Switcher inside the Menu Drawer -->
+        <button
+          type="button"
+          id="dark-mode-toggle-mobile"
+          class="px-2.5 py-1 rounded-lg border border-editorial-borderLight dark:border-editorial-borderDark bg-editorial-lightBg dark:bg-editorial-darkBg text-stone-700 dark:text-stone-300 hover:text-brand hover:border-brand transition-all flex items-center gap-1.5 text-xs font-medium cursor-pointer active:scale-95 shadow-subtle"
+          title="Toggle Light/Dark Theme"
+          aria-label="Toggle Light/Dark Theme"
+        >
+          <svg class="sun-icon hidden w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <svg class="moon-icon w-3.5 h-3.5 text-stone-600 dark:text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+          <span class="text-[11px] font-semibold">Mode</span>
+        </button>
       </div>
 
       <!-- Action Grid: Touch-Friendly Feature Cards (2 cols mobile, 3-4 cols tablet) -->
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
         
+        <!-- Past Entries & Search (Prominent 1st card in menu) -->
+        <button
+          type="button"
+          id="mobile-entries-btn"
+          class="p-3 rounded-xl border border-editorial-borderLight dark:border-editorial-borderDark bg-editorial-lightBg/60 dark:bg-editorial-darkBg/60 hover:border-brand hover:bg-brand/5 text-left transition-all flex flex-col gap-1.5 cursor-pointer active:scale-95 group"
+        >
+          <div class="w-8 h-8 rounded-lg bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-stone-800 dark:text-stone-100 group-hover:text-brand">Past Entries</div>
+            <div class="text-[10px] text-stone-500 dark:text-stone-400">Search & Streaks</div>
+          </div>
+        </button>
+
         <!-- Book Cover Button -->
         <button
           type="button"
@@ -333,23 +351,6 @@ const currentLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === currentLocale)
           </div>
         </button>
 
-        <!-- Past Entries & Search -->
-        <button
-          type="button"
-          id="mobile-entries-btn"
-          class="p-3 rounded-xl border border-editorial-borderLight dark:border-editorial-borderDark bg-editorial-lightBg/60 dark:bg-editorial-darkBg/60 hover:border-brand hover:bg-brand/5 text-left transition-all flex flex-col gap-1.5 cursor-pointer active:scale-95 group"
-        >
-          <div class="w-8 h-8 rounded-lg bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 flex items-center justify-center group-hover:scale-105 transition-transform">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          </div>
-          <div>
-            <div class="text-xs font-bold text-stone-800 dark:text-stone-100 group-hover:text-brand">Past Entries</div>
-            <div class="text-[10px] text-stone-500 dark:text-stone-400">Search & Streaks</div>
-          </div>
-        </button>
-
         <!-- Buy Me a Coffee Support -->
         <a
           href="https://buymeacoffee.com/kisharadilz"
@@ -414,7 +415,7 @@ const currentLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === currentLocale)
 
 <script>
   // --------------------------------------------------------------------------
-  // Mobile & Tablet Menu Toggle
+  // Mobile & Tablet Single Menu Toggle
   // --------------------------------------------------------------------------
   const mobileMenuBtn = document.getElementById('mobile-menu-toggle-btn');
   const mobileNavMenu = document.getElementById('mobile-nav-menu');
@@ -530,7 +531,7 @@ const currentLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === currentLocale)
   }
 
   // --------------------------------------------------------------------------
-  // Dark Mode Toggle Logic (Desktop & Mobile)
+  // Dark Mode Toggle Logic (Desktop & Mobile Drawer)
   // --------------------------------------------------------------------------
   const darkToggleDesktop = document.getElementById('dark-mode-toggle');
   const darkToggleMobile = document.getElementById('dark-mode-toggle-mobile');
