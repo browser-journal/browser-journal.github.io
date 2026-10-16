@@ -1,4 +1,4 @@
-name: Deploy DailyDiary to GitHub Pages
+name: Deploy Browser Journal to GitHub Pages
 
 on:
   push:
