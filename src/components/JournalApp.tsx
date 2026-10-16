@@ -1054,7 +1054,7 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                 <button
                   type="button"
                   onClick={handlePrevDay}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-editorial-lightSurface dark:bg-editorial-darkSurface hover:border-brand hover:text-brand text-editorial-ink dark:text-stone-200 text-xs font-semibold shadow-subtle transition-all active:scale-95 cursor-pointer"
+                  className="shrink-0 flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-editorial-lightSurface dark:bg-editorial-darkSurface hover:border-brand hover:text-brand text-editorial-ink dark:text-stone-200 text-xs font-semibold shadow-subtle transition-all active:scale-95 cursor-pointer"
                   title="Go to Previous Day (Turn Page)"
                 >
                   <ChevronLeft className="w-4 h-4 text-brand" />
@@ -1062,7 +1062,7 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                 </button>
 
                 {/* DATE DISPLAY, COVER SWITCHER & TODAY JUMPER */}
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2 text-center">
                   {/* View Book Cover Button */}
                   <button
                     type="button"
@@ -1074,7 +1074,7 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                     <span className="hidden md:inline">Cover</span>
                   </button>
 
-                  <span className="font-journal font-bold text-sm sm:text-base text-editorial-ink dark:text-stone-100">
+                  <span className="font-journal font-bold text-xs sm:text-base text-editorial-ink dark:text-stone-100">
                     {formatDisplayDate(activeDate, currentLocale, {
                       weekday: 'short',
                       month: 'short',
@@ -1112,7 +1112,7 @@ export default function JournalApp({ currentLocale, dict }: JournalAppProps) {
                 <button
                   type="button"
                   onClick={handleNextDay}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-editorial-lightSurface dark:bg-editorial-darkSurface hover:border-brand hover:text-brand text-editorial-ink dark:text-stone-200 text-xs font-semibold shadow-subtle transition-all active:scale-95 cursor-pointer"
+                  className="shrink-0 flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-editorial-lightSurface dark:bg-editorial-darkSurface hover:border-brand hover:text-brand text-editorial-ink dark:text-stone-200 text-xs font-semibold shadow-subtle transition-all active:scale-95 cursor-pointer"
                   title="Go to Next Day (Turn Page)"
                 >
                   <span className="hidden sm:inline">Tomorrow</span>
