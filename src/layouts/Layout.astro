@@ -20,7 +20,7 @@ const { currentLocale, dict } = Astro.props;
     <SEOHead currentLocale={currentLocale} dict={dict} />
     
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX9L9LE148"></script>
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-CX9L9LE148"></script>
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
