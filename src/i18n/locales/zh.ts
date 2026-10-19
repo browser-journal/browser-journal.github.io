@@ -165,7 +165,7 @@ export const zh: LocalizedDictionary = {
       },
       {
         q: 'DailyDiary 真的完全免费吗？',
-        a: '是的，完全免费、无广告、免登录。您可以通过 Buy Me a Coffee 支持开发者的长期维护。',
+        a: '是的，完全免费、无广告、免登录。您可以通过 Ko-fi 支持开发者的长期维护。',
       },
     ],
   },

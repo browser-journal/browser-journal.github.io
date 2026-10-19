@@ -165,7 +165,7 @@ export const en: LocalizedDictionary = {
       },
       {
         q: 'Is DailyDiary completely free?',
-        a: 'Yes, 100% free with no subscriptions, paywalls, or advertisements. You can support continued open-source development through Buy Me a Coffee.',
+        a: 'Yes, 100% free with no subscriptions, paywalls, or advertisements. You can support continued open-source development through Ko-fi.',
       },
     ],
   },
