@@ -8,7 +8,7 @@
 [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Zero--Server-EAFFD0?style=for-the-badge&logo=shield&logoColor=1C1917)](https://browser-journal.github.io)
 [![Security](https://img.shields.io/badge/Security-AES--GCM%20256--bit-FCE38A?style=for-the-badge&logo=keycdn&logoColor=1C1917)](https://browser-journal.github.io)
 [![License](https://img.shields.io/badge/License-MIT-F38181?style=for-the-badge&logo=open-source-initiative&logoColor=white)](LICENSE)
-[![Support](https://img.shields.io/badge/Ko--fi-Support-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/kishara)
+[![Support](https://img.shields.io/badge/Gumroad-Support-FF90E8?style=for-the-badge&logo=gumroad&logoColor=1C1917)](https://kisharadilshan.gumroad.com/coffee)
 
 <br />
 
@@ -247,7 +247,7 @@ Browser Journal is engineered to achieve **100/100 across all Google Lighthouse 
 
 Browser Journal is 100% free, open-source software built for humanity. If it brings peace, clarity, or daily consistency to your life, consider supporting continued development:
 
-👉 **[Support on Ko-fi](https://ko-fi.com/kishara)**
+👉 **[Support the Developer](https://kisharadilshan.gumroad.com/coffee)**
 
 ---
 
